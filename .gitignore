@@ -21,3 +21,4 @@ vendor/
 # OS files
 .DS_Store
 Thumbs.db
+writable/logs/
