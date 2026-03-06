@@ -1,0 +1,23 @@
+# CodeIgniter writable folders
+writable/debugbar/
+writable/logs/
+writable/cache/
+writable/session/
+writable/uploads/
+
+# Environment file
+.env
+
+# Composer
+vendor/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
