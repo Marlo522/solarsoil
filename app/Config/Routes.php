@@ -15,9 +15,9 @@ $routes->get('about', 'PageController::about');
 // Auth
 $routes->get('login', 'PageController::login');
 $routes->get('register', 'PageController::register');
-$routes->post('login', 'AuthController::attemptLogin');
-$routes->post('register', 'AuthController::attemptRegister');
-$routes->get('logout', 'AuthController::logout');
+$routes->post('login', 'Auth::login');
+$routes->post('register', 'Auth::register');
+$routes->get('logout', 'Auth::logout');
 
 // Authenticated user pages
 $routes->get('cart', 'PageController::cart');

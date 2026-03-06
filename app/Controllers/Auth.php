@@ -9,10 +9,9 @@ class Auth extends BaseController
             if(session()->get('role') == 'admin'){
                 return redirect()->to(base_url('/admin_dashboard'));
             }else{
-                return redirect()->to(base_url('/farmer_dashboard'));
+                return redirect()->to(base_url('/'));
             }
         }
-        return view('pages/login');
     }
 
     public function login()
@@ -32,7 +31,7 @@ class Auth extends BaseController
                 session()->set('role', $user['role']);
                 session()->set('user_id', $user['user_id']);
 
-                $this->check();
+                return $this->check();
             }else{
                 session()->setFlashdata('error', 'Incorrect password');
                 return redirect()->back()->withInput();
