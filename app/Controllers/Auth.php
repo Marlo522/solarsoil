@@ -8,7 +8,11 @@ class Auth extends BaseController
         if(session()->get('isLoggedIn')) {
             if(session()->get('role') == 'admin'){
                 return redirect()->to(base_url('/admin_dashboard'));
-            }else{
+            }
+            elseif(session()->get('role') == 'seller'){
+                return redirect()->to(base_url('/farmer_dashboard'));
+            }
+            else{
                 return redirect()->to(base_url('/'));
             }
         }
