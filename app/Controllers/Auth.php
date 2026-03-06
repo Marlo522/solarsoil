@@ -45,6 +45,15 @@ class Auth extends BaseController
     public function register()
     {
         $usermodel = model('UserModel');
+
+        $password = $this->request->getPost('password');
+        $confirm_password = $this->request->getPost('confirm_password');
+
+        if($password !== $confirm_password){
+            session()->setFlashdata('error', 'Passwords do not match');
+            return redirect()->back()->withInput();
+        }
+
         $data = [
             'role' => $this->request->getPost('role') ?? 'consumer',
             'first_name' => $this->request->getPost('first_name'),
@@ -54,16 +63,15 @@ class Auth extends BaseController
             'email' => $this->request->getPost('email'),
             'contact_number' => $this->request->getPost('contact_number'),
             'address' => $this->request->getPost('address'),
-            'password' => password_hash($this->request->getPost('password'), PASSWORD_DEFAULT),
-            'confirm_password' => $this->request->getPost('confirm_password'),
+            'password' => password_hash($password, PASSWORD_DEFAULT),
         ];
-        
-        if($data['password'] != $data['confirm_password']){
-            session()->setFlashdata('error', 'Passwords do not match');
+
+        try{
+            $usermodel->insert($data);
+        }catch(\Exception $e){
+            session()->setFlashdata('error', $e->getMessage());
             return redirect()->back()->withInput();
         }
-
-        $usermodel->insert($data);
 
         return redirect()->to(base_url('/login'));
     }
