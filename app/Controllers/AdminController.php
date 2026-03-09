@@ -24,6 +24,56 @@ class AdminController extends BaseController
         $this->cartItemModel = new CartItemModel();
     }
 
+    public function index()
+    {
+        // Get totals
+        $totalFarmers = $this->userModel->where('role', 'seller')->countAllResults();
+        $totalConsumers = $this->userModel->where('role', 'consumer')->countAllResults();
+        $totalProducts = $this->productModel->countAllResults();
+        $totalOrders = $this->orderModel->countAllResults();
+        
+        // Get recent data for tables (limit to 5 most recent)
+        $farmers = $this->userModel->where('role', 'seller')->orderBy('user_id', 'DESC')->findAll(5);
+        $consumers = $this->userModel->where('role', 'consumer')->orderBy('user_id', 'DESC')->findAll(5);
+        $orders = $this->orderModel->orderBy('order_id', 'DESC')->findAll(5);
+        
+        // Enrich orders with customer names and totals
+        foreach ($orders as &$order) {
+            $consumer = $this->userModel->where('user_id', $order['user_id'])->first();
+            $order['customer'] = $consumer ? $consumer['first_name'] . ' ' . $consumer['last_name'] : 'Unknown';
+            
+            // Calculate total from cart items
+            $cartItems = $this->cartItemModel->where('order_id', $order['order_id'])->findAll();
+            $subtotal = 0;
+            foreach ($cartItems as $item) {
+                $product = $this->productModel->where('product_id', $item['product_id'])->first();
+                if ($product) {
+                    $subtotal += $product['price'] * $item['quantity'];
+                }
+            }
+            
+            // Add shipping fee
+            $shippingFee = 0;
+            if ($order['shipping_method'] == 'Standard Shipping') {
+                $shippingFee = 50.00;
+            } elseif ($order['shipping_method'] == 'Express Shipping') {
+                $shippingFee = 150.00;
+            }
+            $order['total'] = $subtotal + $shippingFee;
+        }
+        
+        return view('dashboard/admin_dashboard', [
+            'title' => 'Admin Dashboard - SolarSoil',
+            'totalFarmers' => $totalFarmers,
+            'totalConsumers' => $totalConsumers,
+            'totalProducts' => $totalProducts,
+            'totalOrders' => $totalOrders,
+            'farmers' => $farmers,
+            'consumers' => $consumers,
+            'orders' => $orders
+        ]);
+    }
+
     public function farmers()
     {
         $page = max(1, (int) ($this->request->getGet('page') ?? 1));
@@ -65,6 +115,32 @@ class AdminController extends BaseController
         ]);
     }
 
+    public function deactivateFarmer(int $id)
+    {
+        $farmer = $this->userModel->where('user_id', $id)->where('role', 'seller')->first();
+
+        if (!$farmer) {
+            return redirect()->to(base_url('admin/farmers'))->with('error', 'Farmer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 0]);
+        
+        return redirect()->to(base_url('admin/farmers'))->with('success', 'Farmer deactivated successfully.');
+    }
+
+    public function activateFarmer(int $id)
+    {
+        $farmer = $this->userModel->where('user_id', $id)->where('role', 'seller')->first();
+
+        if (!$farmer) {
+            return redirect()->to(base_url('admin/farmers'))->with('error', 'Farmer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 1]);
+        
+        return redirect()->to(base_url('admin/farmers'))->with('success', 'Farmer activated successfully.');
+    }
+
     public function consumers()
     {
         $page = max(1, (int) ($this->request->getGet('page') ?? 1));
@@ -103,6 +179,32 @@ class AdminController extends BaseController
             'totalOrders' => $totalOrders,
         ]);
     }
+
+    public function deactivateConsumer(int $id)
+    {
+        $consumer = $this->userModel->where('user_id', $id)->where('role', 'consumer')->first();
+
+        if (!$consumer) {
+            return redirect()->to(base_url('admin/consumers'))->with('error', 'Consumer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 0]);
+        
+        return redirect()->to(base_url('admin/consumers'))->with('success', 'Consumer deactivated successfully.');
+    }
+
+    public function activateConsumer(int $id)
+    {
+        $consumer = $this->userModel->where('user_id', $id)->where('role', 'consumer')->first();
+
+        if (!$consumer) {
+            return redirect()->to(base_url('admin/consumers'))->with('error', 'Consumer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 1]);
+        
+        return redirect()->to(base_url('admin/consumers'))->with('success', 'Consumer activated successfully.');
+    }   
 
     public function orders()
     {
@@ -212,4 +314,12 @@ class AdminController extends BaseController
             'orderStatus' => $orderStatus
         ]);
     }
+
+    public function profile()
+    {
+        return view('admin/admin_profile', [
+            'title' => 'Admin Profile - SolarSoil'
+        ]);
+    }
+    
 }

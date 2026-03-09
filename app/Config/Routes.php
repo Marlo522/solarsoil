@@ -35,14 +35,17 @@ $routes->group('farmer', static function ($routes) {
 
 // Admin dashboard
 $routes->group('admin', static function ($routes) {
-    $routes->get('dashboard', 'PageController::adminDashboard');
+    $routes->get('dashboard', 'AdminController::index');
     $routes->get('farmers', 'AdminController::farmers');
     $routes->get('farmers/(:num)', 'AdminController::farmerDetail/$1');
+    $routes->get('farmers/deactivate/(:num)', 'AdminController::deactivateFarmer/$1');
+    $routes->get('farmers/activate/(:num)', 'AdminController::activateFarmer/$1');
     $routes->get('consumers', 'AdminController::consumers');
     $routes->get('consumers/(:num)', 'AdminController::consumerDetail/$1');
+    $routes->get('consumers/deactivate/(:num)', 'AdminController::deactivateConsumer/$1');
+    $routes->get('consumers/activate/(:num)', 'AdminController::activateConsumer/$1');
     $routes->get('orders', 'AdminController::orders');
     $routes->get('orders/(:num)', 'AdminController::order_detail/$1');
-    $routes->get('products', 'PageController::adminDashboard');
-    $routes->get('products', 'PageController::adminDashboard');
-    $routes->get('profile', 'PageController::adminProfile');
+    $routes->get('products', 'AdminController::products');
+    $routes->get('profile', 'AdminController::profile');
 });
