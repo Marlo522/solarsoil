@@ -44,6 +44,7 @@ class FarmerController extends BaseController
             $farmerProducts = $productModel->where('user_id', session()->get('user_id'))->findAll();
             $totalProducts = count($farmerProducts);
             $data = [
+                'title' => 'Farmer Dashboard - SolarSoil',
                 'farmerProducts' => $farmerProducts,
                 'totalProducts' => $totalProducts
             ];
