@@ -21,7 +21,7 @@ class FarmerController extends BaseController
         }
 
         $data = [
-            
+            'user_id' => session()->get('user_id'),
             'name' => $this->request->getPost('name'),
             'category' => $this->request->getPost('category'),
             'price' => $this->request->getPost('price'),
