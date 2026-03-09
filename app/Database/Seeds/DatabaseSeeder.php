@@ -27,11 +27,11 @@ class DatabaseSeeder extends Seeder
         $userIds = [];
         
         $userData = [
-            ['first_name' => 'Juan', 'middle_name' => 'Santos', 'last_name' => 'Dela Cruz', 'suffix' => null, 'address' => 'Quezon City', 'contact_number' => '09123456789', 'role' => 'consumer', 'email' => 'juan@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null],
-            ['first_name' => 'Maria', 'middle_name' => null, 'last_name' => 'Reyes', 'suffix' => null, 'address' => 'Manila', 'contact_number' => '09111111111', 'role' => 'seller', 'email' => 'maria@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null],
-            ['first_name' => 'Pedro', 'middle_name' => 'Lopez', 'last_name' => 'Garcia', 'suffix' => null, 'address' => 'Pasig', 'contact_number' => '09222222222', 'role' => 'consumer', 'email' => 'pedro@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null],
-            ['first_name' => 'Ana', 'middle_name' => null, 'last_name' => 'Torres', 'suffix' => null, 'address' => 'Makati', 'contact_number' => '09333333333', 'role' => 'seller', 'email' => 'ana@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null],
-            ['first_name' => 'Admin', 'middle_name' => null, 'last_name' => 'User', 'suffix' => null, 'address' => 'Philippines', 'contact_number' => '09444444444', 'role' => 'admin', 'email' => 'admin@email.com', 'password' => password_hash('admin123', PASSWORD_DEFAULT), 'token' => null]
+            ['first_name' => 'Juan', 'middle_name' => 'Santos', 'last_name' => 'Dela Cruz', 'suffix' => null, 'address' => 'Quezon City', 'contact_number' => '09123456789', 'role' => 'consumer', 'email' => 'juan@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null, 'date_joined' => date('Y-m-d H:i:s'), 'isActive' => 1],
+            ['first_name' => 'Maria', 'middle_name' => null, 'last_name' => 'Reyes', 'suffix' => null, 'address' => 'Manila', 'contact_number' => '09111111111', 'role' => 'seller', 'email' => 'maria@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null, 'date_joined' => date('Y-m-d H:i:s'), 'isActive' => 1],
+            ['first_name' => 'Pedro', 'middle_name' => 'Lopez', 'last_name' => 'Garcia', 'suffix' => null, 'address' => 'Pasig', 'contact_number' => '09222222222', 'role' => 'consumer', 'email' => 'pedro@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null, 'date_joined' => date('Y-m-d H:i:s'), 'isActive' => 1],
+            ['first_name' => 'Ana', 'middle_name' => null, 'last_name' => 'Torres', 'suffix' => null, 'address' => 'Makati', 'contact_number' => '09333333333', 'role' => 'seller', 'email' => 'ana@email.com', 'password' => password_hash('password123', PASSWORD_DEFAULT), 'token' => null, 'date_joined' => date('Y-m-d H:i:s'), 'isActive' => 1],
+            ['first_name' => 'Admin', 'middle_name' => null, 'last_name' => 'User', 'suffix' => null, 'address' => 'Philippines', 'contact_number' => '09444444444', 'role' => 'admin', 'email' => 'admin@email.com', 'password' => password_hash('admin123', PASSWORD_DEFAULT), 'token' => null, 'date_joined' => date('Y-m-d H:i:s'), 'isActive' => 1]
         ];
 
         foreach ($userData as $user) {

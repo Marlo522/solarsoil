@@ -20,6 +20,7 @@ class UserModel extends Model
         'email',
         'password',
         'token',
+        'isActive',
         'date_joined'
     ];
 
