@@ -43,16 +43,15 @@ class DatabaseSeeder extends Seeder
         $productIds = [];
         
         $productData = [
-            ['image'=>'tomato.jpg','name'=>'Fresh Tomatoes','price'=>80,'stock_quantity'=>100,'description'=>'Organic red tomatoes, farm fresh','category'=>'Vegetables'],
-            ['image'=>'carrot.jpg','name'=>'Carrots','price'=>60,'stock_quantity'=>150,'description'=>'Sweet and crunchy carrots','category'=>'Vegetables'],
-            ['image'=>'banana.jpg','name'=>'Bananas','price'=>50,'stock_quantity'=>200,'description'=>'Ripe Cavendish bananas','category'=>'Fruits'],
-            ['image'=>'lettuce.jpg','name'=>'Lettuce','price'=>40,'stock_quantity'=>80,'description'=>'Fresh green lettuce','category'=>'Vegetables'],
-            ['image'=>'mango.jpg','name'=>'Mangoes','price'=>120,'stock_quantity'=>60,'description'=>'Sweet Philippine mangoes','category'=>'Fruits'],
-            ['image'=>'potato.jpg','name'=>'Potatoes','price'=>70,'stock_quantity'=>120,'description'=>'Fresh potatoes for cooking','category'=>'Vegetables'],
-            ['image'=>'apple.jpg','name'=>'Apples','price'=>150,'stock_quantity'=>90,'description'=>'Crisp red apples','category'=>'Fruits'],
-            ['image'=>'cucumber.jpg','name'=>'Cucumber','price'=>45,'stock_quantity'=>100,'description'=>'Fresh green cucumber','category'=>'Vegetables'],
-            ['image'=>'orange.jpg','name'=>'Oranges','price'=>100,'stock_quantity'=>110,'description'=>'Juicy sweet oranges','category'=>'Fruits'],
-            ['image'=>'eggplant.jpg','name'=>'Eggplant','price'=>55,'stock_quantity'=>70,'description'=>'Fresh purple eggplant','category'=>'Vegetables']
+            ['user_id' => $userIds[2], 'image' => 'tomato.jpg', 'name' => 'Fresh Tomatoes', 'price' => 80, 'stock_quantity' => 100, 'description' => 'Organic red tomatoes, farm fresh', 'category' => 'Vegetables'],
+            ['user_id' => $userIds[2], 'image' => 'carrot.jpg', 'name' => 'Carrots', 'price' => 60, 'stock_quantity' => 150, 'description' => 'Sweet and crunchy carrots', 'category' => 'Vegetables'],
+            ['user_id' => $userIds[2], 'image' => 'banana.jpg', 'name' => 'Bananas', 'price' => 50, 'stock_quantity' => 200, 'description' => 'Ripe Cavendish bananas', 'category' => 'Fruits'],
+            ['user_id' => $userIds[2], 'image' => 'lettuce.jpg', 'name' => 'Lettuce', 'price' => 40, 'stock_quantity' => 80, 'description' => 'Fresh green lettuce', 'category' => 'Vegetables'],
+            ['user_id' => $userIds[2], 'image' => 'mango.jpg', 'name' => 'Mangoes', 'price' => 120, 'stock_quantity' => 60, 'description' => 'Sweet Philippine mangoes', 'category' => 'Fruits'],
+            ['user_id' => $userIds[2], 'image' => 'potato.jpg', 'name' => 'Potatoes', 'price' => 70, 'stock_quantity' => 120, 'description' => 'Fresh potatoes for cooking', 'category' => 'Vegetables'],
+            ['user_id' => $userIds[3], 'image' => 'apple.jpg', 'name' => 'Apples', 'price' => 150, 'stock_quantity' => 90, 'description' => 'Crisp red apples', 'category' => 'Fruits'],
+            ['user_id' => $userIds[3], 'image' => 'cucumber.jpg', 'name' => 'Cucumber', 'price' => 45, 'stock_quantity' => 100, 'description' => 'Fresh green cucumber', 'category' => 'Vegetables'],
+            ['user_id' => $userIds[3], 'image' => 'orange.jpg', 'name' => 'Oranges', 'price' => 100, 'stock_quantity' => 110, 'description' => 'Juicy sweet oranges', 'category' => 'Fruits']
         ];
 
         foreach ($productData as $product) {
@@ -60,12 +59,6 @@ class DatabaseSeeder extends Seeder
             $productIds[] = $db->insertID();
         }
 
-        // CARTS - Use actual user IDs
-        $cartIds = [];
-        foreach ($userIds as $userId) {
-            $db->table('carts')->insert(['user_id' => $userId]);
-            $cartIds[] = $db->insertID();
-        }
 
         // ORDERS - Use actual user and cart IDs
         $orderIds = [];

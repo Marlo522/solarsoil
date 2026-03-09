@@ -99,4 +99,11 @@ class AdminController extends BaseController
             'totalOrders' => $totalOrders,
         ]);
     }
+
+    public function orders()
+    {
+        return view('admin/orders', [
+            'title' => 'Order Management - SolarSoil',
+        ]);
+    }
 }
