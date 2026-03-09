@@ -41,6 +41,8 @@ $routes->group('admin', static function ($routes) {
     $routes->get('consumers', 'AdminController::consumers');
     $routes->get('consumers/(:num)', 'AdminController::consumerDetail/$1');
     $routes->get('orders', 'AdminController::orders');
+    $routes->get('orders/(:num)', 'AdminController::order_detail/$1');
+    $routes->get('products', 'PageController::adminDashboard');
     $routes->get('products', 'PageController::adminDashboard');
     $routes->get('profile', 'PageController::adminProfile');
 });
