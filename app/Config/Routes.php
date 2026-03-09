@@ -26,7 +26,7 @@ $routes->get('profile', 'PageController::profile');
 
 // Farmer dashboard
 $routes->group('farmer', static function ($routes) {
-    $routes->get('dashboard', 'PageController::farmerDashboard');
+    $routes->get('dashboard', 'FarmerController::index');
     $routes->get('products', 'PageController::farmerDashboard');
     $routes->get('orders', 'PageController::farmerDashboard');
     $routes->get('profile', 'PageController::farmerProfile');

@@ -27,12 +27,7 @@ $stats = $stats ?? [
     ['label' => 'Pending Orders', 'value' => 5, 'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>', 'color' => 'bg-amber-50 text-amber-600'],
     ['label' => 'Total Products', 'value' => 24, 'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>', 'color' => 'bg-primary-50 text-primary-600'],
 ];
-$farmerProducts = $farmerProducts ?? [
-    ['product_id' => 1, 'image' => 'tomato.jpg', 'name' => 'Fresh Tomatoes', 'category' => 'Vegetables', 'price' => 80.00, 'stock_quantity' => 100],
-    ['product_id' => 2, 'image' => 'carrot.jpg', 'name' => 'Carrots', 'category' => 'Vegetables', 'price' => 60.00, 'stock_quantity' => 150],
-    ['product_id' => 5, 'image' => 'mango.jpg', 'name' => 'Mangoes', 'category' => 'Fruits', 'price' => 120.00, 'stock_quantity' => 60],
-    ['product_id' => 6, 'image' => 'potato.jpg', 'name' => 'Potatoes', 'category' => 'Vegetables', 'price' => 70.00, 'stock_quantity' => 120],
-];
+
 ?>
 
 <!-- Stats -->

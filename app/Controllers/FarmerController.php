@@ -34,4 +34,18 @@ class FarmerController extends BaseController
 
         return redirect()->to(base_url('farmer/dashboard'));
     }
+
+
+        public function index()
+        {
+         
+
+            $productModel = model('ProductModel');
+            $farmerProducts = $productModel->where('user_id', session()->get('user_id'))->findAll();
+            $data = [
+                'farmerProducts' => $farmerProducts
+            ];
+
+            return view('dashboard/farmer_dashboard', $data);
+        }
 }
