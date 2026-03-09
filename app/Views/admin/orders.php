@@ -69,7 +69,11 @@
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">#ORD<?= esc($order['order_id']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($order['consumer_name'] ?? 'N/A') ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700">₱<?= number_format($order['total_amount'] ?? 0, 2) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-500"><?= $order['isCompleted'] ? 'Completed' : 'Pending' ?></td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full <?= $order['status'] === 'pending' ? 'bg-yellow-100 text-yellow-800' : ($order['status'] === 'completed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') ?>">
+                                <?= esc(ucfirst($order['status'])) ?>
+                            </span>
+                        </td>
                         <td class="px-6 py-4 text-center">
                             <a href="<?= base_url('admin/orders/' . $order['order_id']) ?>" class="text-sm text-primary-700 hover:text-primary-900 font-medium">View</a>
                             <span class="text-gray-300 mx-1">|</span>

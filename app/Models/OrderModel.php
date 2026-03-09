@@ -12,8 +12,12 @@ class OrderModel extends Model
     protected $allowedFields = [
         'user_id',
         'cart_id',
+        'shipping_method',
+        'payment_method',
+        'status',
         'created_at',
-        'isCompleted'
+        'isCompleted',
+        'total_amount'
     ];
 
     protected $useTimestamps = false;
