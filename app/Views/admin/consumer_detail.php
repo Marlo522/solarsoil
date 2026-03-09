@@ -45,8 +45,8 @@
         <div class="flex items-center gap-2">
             <span class="text-sm text-gray-500">Status:</span>
             <?php
-            $status = $consumer['status'] ?? 'active';
-            $statusClass = $status === 'active' ? 'border-green-500 text-green-700' : ($status === 'pending' ? 'border-amber-500 text-amber-700' : 'border-red-500 text-red-700');
+                $status = $consumer['isActive'] ? 'active' : 'inactive';
+                $statusClass = $consumer['isActive'] ? 'border-green-500 text-green-600 bg-green-100' : 'border-gray-300 text-gray-600 bg-gray-100';
             ?>
             <span class="px-3 py-1 text-sm font-medium border-2 <?= $statusClass ?> rounded-full capitalize"><?= esc($status) ?></span>
         </div>
