@@ -42,8 +42,10 @@ class FarmerController extends BaseController
 
             $productModel = model('ProductModel');
             $farmerProducts = $productModel->where('user_id', session()->get('user_id'))->findAll();
+            $totalProducts = count($farmerProducts);
             $data = [
-                'farmerProducts' => $farmerProducts
+                'farmerProducts' => $farmerProducts,
+                'totalProducts' => $totalProducts
             ];
 
             return view('dashboard/farmer_dashboard', $data);
