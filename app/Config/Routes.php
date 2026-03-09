@@ -29,14 +29,18 @@ $routes->group('farmer', static function ($routes) {
     $routes->get('dashboard', 'PageController::farmerDashboard');
     $routes->get('products', 'PageController::farmerDashboard');
     $routes->get('orders', 'PageController::farmerDashboard');
+    $routes->get('profile', 'PageController::farmerProfile');
     $routes->post('products/add', 'FarmerController::addProduct');
 });
 
 // Admin dashboard
 $routes->group('admin', static function ($routes) {
     $routes->get('dashboard', 'PageController::adminDashboard');
-    $routes->get('farmers', 'PageController::adminDashboard');
-    $routes->get('consumers', 'PageController::adminDashboard');
+    $routes->get('farmers', 'AdminController::farmers');
+    $routes->get('farmers/(:num)', 'AdminController::farmerDetail/$1');
+    $routes->get('consumers', 'AdminController::consumers');
+    $routes->get('consumers/(:num)', 'AdminController::consumerDetail/$1');
     $routes->get('orders', 'PageController::adminDashboard');
     $routes->get('products', 'PageController::adminDashboard');
+    $routes->get('profile', 'PageController::adminProfile');
 });

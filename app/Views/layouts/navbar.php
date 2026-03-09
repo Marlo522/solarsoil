@@ -28,6 +28,10 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                         Profile
                     </a>
+                    <a href="<?= base_url('logout') ?>" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3l3-3m0 0l-3-3m3 3H9"/></svg>
+                        Logout
+                    </a>
                 <?php else: ?>
                     <a href="<?= base_url('login') ?>" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition">Log In</a>
                     <a href="<?= base_url('register') ?>" class="px-5 py-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition shadow-sm">Sign Up</a>
@@ -50,6 +54,7 @@
             <div class="pt-2 border-t border-gray-100 mt-2 space-y-1">
                 <?php if (session()->get('user_id')): ?>
                     <a href="<?= base_url('profile') ?>" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-primary-50 rounded-lg">Profile</a>
+                    <a href="<?= base_url('logout') ?>" class="block px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg">Logout</a>
                 <?php else: ?>
                     <a href="<?= base_url('login') ?>" class="block px-4 py-2 text-sm font-medium text-gray-700 hover:bg-primary-50 rounded-lg">Log In</a>
                     <a href="<?= base_url('register') ?>" class="block px-4 py-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 rounded-lg text-center">Sign Up</a>

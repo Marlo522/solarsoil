@@ -64,11 +64,6 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
                 </button>
                 <h1 class="text-lg font-semibold text-gray-900"><?= $pageTitle ?? 'Dashboard' ?></h1>
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-primary-100 text-primary-700 rounded-lg flex items-center justify-center text-sm font-bold">
-                        <?= strtoupper(substr(session()->get('first_name') ?? 'U', 0, 1)) ?>
-                    </div>
-                </div>
             </header>
 
             <!-- Content -->
