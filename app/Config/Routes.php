@@ -48,4 +48,7 @@ $routes->group('admin', static function ($routes) {
     $routes->get('orders/(:num)', 'AdminController::order_detail/$1');
     $routes->get('products', 'AdminController::products');
     $routes->get('profile', 'AdminController::profile');
+    $routes->get('editprofile', 'AdminController::editProfile');
+    $routes->post('updateprofile', 'AdminController::updateProfile');
+    $routes->post('changepassword', 'AdminController::changePassword');
 });

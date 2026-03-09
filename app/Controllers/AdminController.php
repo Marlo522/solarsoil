@@ -317,9 +317,86 @@ class AdminController extends BaseController
 
     public function profile()
     {
+        $user = $this->userModel->where('user_id', session()->get('user_id'))->first();
         return view('admin/admin_profile', [
-            'title' => 'Admin Profile - SolarSoil'
+            'title' => 'Admin Profile - SolarSoil',
+            'user' => $user
         ]);
     }
-    
+
+    public function editProfile()
+    {
+        $user = $this->userModel->where('user_id', session()->get('user_id'))->first();
+        return view('admin/admin_editprofile', [
+            'title' => 'Edit Admin Profile - SolarSoil',
+            'user' => $user
+        ]);
+    }
+    public function updateProfile()
+    {
+        $userId = session()->get('user_id');
+        $user = $this->userModel->where('user_id', $userId)->first();
+
+        if (!$user) {
+            return redirect()->to(base_url('admin/profile'))->with('error', 'User not found.');
+        }
+
+        // Validate using the adminProfile rule group from Validation.php
+        if (!$this->validate('adminProfile')) {
+            session()->remove('tab');
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+        if ($this->request->getPost('email') !== $user['email']) {
+            // Check if the new email is already taken by another user
+            $existingUser = $this->userModel->where('email', $this->request->getPost('email'))->first();
+            if ($existingUser) {
+                session()->remove('tab');
+                return redirect()->back()->withInput()->with('error', 'This email address is already in use by another account.');
+            }
+        }
+
+        // Update user profile
+        $updateData = [
+            'first_name' => $this->request->getPost('first_name'),
+            'last_name' => $this->request->getPost('last_name'),
+            'email' => $this->request->getPost('email'),
+            'contact_number' => $this->request->getPost('contact_number'),
+            'address' => $this->request->getPost('address')
+        ];
+
+        $this->userModel->update($userId, $updateData);
+
+        session()->remove('tab');
+        return redirect()->to(base_url('admin/profile'))->with('success', 'Profile updated successfully.');
+    }
+
+    public function changePassword()
+    {
+        $userId = session()->get('user_id');
+        $user = $this->userModel->where('user_id', $userId)->first();
+
+        if (!$user) {
+            return redirect()->to(base_url('admin/profile'))->with('error', 'User not found.');
+        }
+
+        // Validate using the changePassword rule group from Validation.php
+        if (!$this->validate('changePassword')) {
+            session()->set('tab', 'settings');
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // Verify current password
+        if (!password_verify($this->request->getPost('current_password'), $user['password'])) {
+            session()->set('tab', 'settings');
+            return redirect()->back()->withInput()->with('error', 'Current password is incorrect.');
+        }
+
+        // Update password
+        $newPassword = password_hash($this->request->getPost('new_password'), PASSWORD_DEFAULT);
+        $this->userModel->update($userId, ['password' => $newPassword]);
+
+        session()->set('tab', 'settings');
+        return redirect()->to(base_url('admin/profile'))->with('success', 'Password changed successfully.');
+    }
+
 }
