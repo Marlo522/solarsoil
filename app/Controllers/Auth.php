@@ -3,7 +3,7 @@ namespace App\Controllers;
 
 class Auth extends BaseController
 {
-    public function check()
+    public function redirect()
     {
         if(session()->get('isLoggedIn')) {
             if(session()->get('role') == 'admin'){
@@ -35,7 +35,7 @@ class Auth extends BaseController
                 session()->set('role', $user['role']);
                 session()->set('user_id', $user['user_id']);
 
-                return $this->check();
+                return $this->redirect();
             }else{
                 session()->setFlashdata('error', 'Incorrect password');
                 return redirect()->back()->withInput();
