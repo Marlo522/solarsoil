@@ -25,14 +25,9 @@
 $stats = $stats ?? [
     ['label' => 'Orders Today', 'value' => 12, 'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>', 'color' => 'bg-blue-50 text-blue-600'],
     ['label' => 'Pending Orders', 'value' => 5, 'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>', 'color' => 'bg-amber-50 text-amber-600'],
-    ['label' => 'Total Products', 'value' => 24, 'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>', 'color' => 'bg-primary-50 text-primary-600'],
+    ['label' => 'Total Products', 'value' => $totalProducts, 'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>', 'color' => 'bg-primary-50 text-primary-600'],
 ];
-$farmerProducts = $farmerProducts ?? [
-    ['product_id' => 1, 'image' => 'tomato.jpg', 'name' => 'Fresh Tomatoes', 'category' => 'Vegetables', 'price' => 80.00, 'stock_quantity' => 100],
-    ['product_id' => 2, 'image' => 'carrot.jpg', 'name' => 'Carrots', 'category' => 'Vegetables', 'price' => 60.00, 'stock_quantity' => 150],
-    ['product_id' => 5, 'image' => 'mango.jpg', 'name' => 'Mangoes', 'category' => 'Fruits', 'price' => 120.00, 'stock_quantity' => 60],
-    ['product_id' => 6, 'image' => 'potato.jpg', 'name' => 'Potatoes', 'category' => 'Vegetables', 'price' => 70.00, 'stock_quantity' => 120],
-];
+
 ?>
 
 <!-- Stats -->
@@ -70,7 +65,7 @@ $farmerProducts = $farmerProducts ?? [
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                <img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=80&h=80&fit=crop" alt="<?= esc($p['name']) ?>" class="w-full h-full object-cover">
+                                <img src="<?= base_url('public/uploads/products/' . $p['image']) ?>" alt="<?= esc($p['name']) ?>" class="w-full h-full object-cover">
                             </div>
                             <span class="text-sm font-medium text-gray-900"><?= esc($p['name']) ?></span>
                         </div>
@@ -109,7 +104,7 @@ $farmerProducts = $farmerProducts ?? [
                 </button>
             </div>
             <form action="<?= base_url('farmer/products/add') ?>" method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
-                <?= csrf_field() ?>
+            
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Name</label>
                     <input type="text" name="name" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" placeholder="e.g. Fresh Tomatoes">
@@ -141,13 +136,39 @@ $farmerProducts = $farmerProducts ?? [
                     <textarea name="description" rows="3" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition resize-none" placeholder="Describe your product..."></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Image</label>
-                    <div class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-primary-300 transition cursor-pointer">
-                        <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M6.75 7.5l.75-.75a3 3 0 014.5 0l.75.75M6.75 7.5h10.5M6.75 7.5H3m3.75 0V3m10.5 4.5V3m0 4.5H21"/></svg>
-                        <p class="text-sm text-gray-500">Click to upload or drag and drop</p>
-                        <p class="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
-                        <input type="file" name="image" accept="image/*" class="hidden">
-                    </div>
+
+            <div x-data="{ imagePreview: null }">
+
+                <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Image</label>
+
+                <label class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-primary-300 transition cursor-pointer block">
+
+                    <!-- preview -->
+                    <template x-if="imagePreview">
+                        <img :src="imagePreview" class="w-32 h-32 object-cover rounded-lg mx-auto mb-3">
+                    </template>
+
+                    <!-- default icon -->
+                    <template x-if="!imagePreview">
+                        <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909"/>
+                        </svg>
+                    </template>
+
+                    <p class="text-sm text-gray-500">Click to upload or drag and drop</p>
+                    <p class="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        class="hidden"
+                        @change="imagePreview = URL.createObjectURL($event.target.files[0])"
+                    >
+
+                </label>
+
+                </div>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button" @click="showAddModal = false" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 rounded-lg transition">Cancel</button>

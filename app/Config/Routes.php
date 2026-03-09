@@ -29,7 +29,7 @@ $routes->get('profile', 'PageController::profile', ['filter' => 'auth:consumer']
 
 // Farmer dashboard
 $routes->group('farmer', ['filter' => 'auth:seller'], static function ($routes) {
-    $routes->get('dashboard', 'PageController::farmerDashboard');
+    $routes->get('dashboard', 'FarmerController::index');
     $routes->get('products', 'PageController::farmerDashboard');
     $routes->get('orders', 'PageController::farmerDashboard');
     $routes->get('profile', 'PageController::farmerProfile');
