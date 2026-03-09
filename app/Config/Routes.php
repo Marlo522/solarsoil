@@ -20,12 +20,12 @@ $routes->post('register', 'Auth::register');
 $routes->get('logout', 'Auth::logout');
 
 // Authenticated user pages
-$routes->get('cart', 'PageController::cart');
-$routes->get('checkout', 'PageController::checkout');
-$routes->get('profile', 'PageController::profile');
+$routes->get('cart', 'PageController::cart', ['filter' => 'auth']);
+$routes->get('checkout', 'PageController::checkout', ['filter' => 'auth']);
+$routes->get('profile', 'PageController::profile', ['filter' => 'auth']);
 
 // Farmer dashboard
-$routes->group('farmer', static function ($routes) {
+$routes->group('farmer', ['filter' => 'auth'], static function ($routes) {
     $routes->get('dashboard', 'PageController::farmerDashboard');
     $routes->get('products', 'PageController::farmerDashboard');
     $routes->get('orders', 'PageController::farmerDashboard');
@@ -34,7 +34,7 @@ $routes->group('farmer', static function ($routes) {
 });
 
 // Admin dashboard
-$routes->group('admin', static function ($routes) {
+$routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('dashboard', 'PageController::adminDashboard');
     $routes->get('farmers', 'AdminController::farmers');
     $routes->get('farmers/(:num)', 'AdminController::farmerDetail/$1');
