@@ -1,7 +1,6 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<h1>test</h1>
 <!-- Hero Section -->
 <section class="relative overflow-hidden bg-gradient-to-br from-primary-800 via-primary-700 to-primary-600">
     <div class="absolute inset-0">

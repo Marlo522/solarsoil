@@ -59,6 +59,7 @@
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Farmer ID</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Farmer Name</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Address</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Date Joined</th>
                     <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Actions</th>
                 </tr>
@@ -70,17 +71,28 @@
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">#FRM<?= esc($farmer['user_id']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($farmer['first_name'] . ' ' . $farmer['last_name']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($farmer['address'] ?? 'N/A') ?></td>
+                        <td class="px-6 py-4">
+                            <?php if ($farmer['isActive']): ?>
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                            <?php else: ?>
+                                <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Inactive</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-500"><?= date('F j, Y', strtotime($farmer['date_joined'] ?? $farmer['created_at'] ?? 'now')) ?></td>
                         <td class="px-6 py-4 text-center">
                             <a href="<?= base_url('admin/farmers/' . $farmer['user_id']) ?>" class="text-sm text-primary-700 hover:text-primary-900 font-medium">View</a>
                             <span class="text-gray-300 mx-1">|</span>
-                            <button onclick="if(confirm('Are you sure you want to delete this farmer?')) window.location='<?= base_url('admin/farmers/delete/' . $farmer['user_id']) ?>'" class="text-sm text-red-500 hover:text-red-700 font-medium">Delete</button>
+                            <?php if ($farmer['isActive']): ?>
+                                <button onclick="if(confirm('Are you sure you want to deactivate this farmer?')) window.location='<?= base_url('admin/farmers/deactivate/' . $farmer['user_id']) ?>'" class="text-sm text-amber-500 hover:text-amber-700 font-medium">Deactivate</button>
+                            <?php else: ?>
+                                <button onclick="if(confirm('Are you sure you want to activate this farmer?')) window.location='<?= base_url('admin/farmers/activate/' . $farmer['user_id']) ?>'" class="text-sm text-green-500 hover:text-green-700 font-medium">Activate</button>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-400">No farmers found.</td>
+                        <td colspan="6" class="px-6 py-12 text-center text-sm text-gray-400">No farmers found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

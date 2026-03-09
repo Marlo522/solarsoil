@@ -24,6 +24,56 @@ class AdminController extends BaseController
         $this->cartItemModel = new CartItemModel();
     }
 
+    public function index()
+    {
+        // Get totals
+        $totalFarmers = $this->userModel->where('role', 'seller')->countAllResults();
+        $totalConsumers = $this->userModel->where('role', 'consumer')->countAllResults();
+        $totalProducts = $this->productModel->countAllResults();
+        $totalOrders = $this->orderModel->countAllResults();
+        
+        // Get recent data for tables (limit to 5 most recent)
+        $farmers = $this->userModel->where('role', 'seller')->orderBy('user_id', 'DESC')->findAll(5);
+        $consumers = $this->userModel->where('role', 'consumer')->orderBy('user_id', 'DESC')->findAll(5);
+        $orders = $this->orderModel->orderBy('order_id', 'DESC')->findAll(5);
+        
+        // Enrich orders with customer names and totals
+        foreach ($orders as &$order) {
+            $consumer = $this->userModel->where('user_id', $order['user_id'])->first();
+            $order['customer'] = $consumer ? $consumer['first_name'] . ' ' . $consumer['last_name'] : 'Unknown';
+            
+            // Calculate total from cart items
+            $cartItems = $this->cartItemModel->where('order_id', $order['order_id'])->findAll();
+            $subtotal = 0;
+            foreach ($cartItems as $item) {
+                $product = $this->productModel->where('product_id', $item['product_id'])->first();
+                if ($product) {
+                    $subtotal += $product['price'] * $item['quantity'];
+                }
+            }
+            
+            // Add shipping fee
+            $shippingFee = 0;
+            if ($order['shipping_method'] == 'Standard Shipping') {
+                $shippingFee = 50.00;
+            } elseif ($order['shipping_method'] == 'Express Shipping') {
+                $shippingFee = 150.00;
+            }
+            $order['total'] = $subtotal + $shippingFee;
+        }
+        
+        return view('dashboard/admin_dashboard', [
+            'title' => 'Admin Dashboard - SolarSoil',
+            'totalFarmers' => $totalFarmers,
+            'totalConsumers' => $totalConsumers,
+            'totalProducts' => $totalProducts,
+            'totalOrders' => $totalOrders,
+            'farmers' => $farmers,
+            'consumers' => $consumers,
+            'orders' => $orders
+        ]);
+    }
+
     public function farmers()
     {
         $page = max(1, (int) ($this->request->getGet('page') ?? 1));
@@ -65,6 +115,32 @@ class AdminController extends BaseController
         ]);
     }
 
+    public function deactivateFarmer(int $id)
+    {
+        $farmer = $this->userModel->where('user_id', $id)->where('role', 'seller')->first();
+
+        if (!$farmer) {
+            return redirect()->to(base_url('admin/farmers'))->with('error', 'Farmer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 0]);
+        
+        return redirect()->to(base_url('admin/farmers'))->with('success', 'Farmer deactivated successfully.');
+    }
+
+    public function activateFarmer(int $id)
+    {
+        $farmer = $this->userModel->where('user_id', $id)->where('role', 'seller')->first();
+
+        if (!$farmer) {
+            return redirect()->to(base_url('admin/farmers'))->with('error', 'Farmer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 1]);
+        
+        return redirect()->to(base_url('admin/farmers'))->with('success', 'Farmer activated successfully.');
+    }
+
     public function consumers()
     {
         $page = max(1, (int) ($this->request->getGet('page') ?? 1));
@@ -103,6 +179,32 @@ class AdminController extends BaseController
             'totalOrders' => $totalOrders,
         ]);
     }
+
+    public function deactivateConsumer(int $id)
+    {
+        $consumer = $this->userModel->where('user_id', $id)->where('role', 'consumer')->first();
+
+        if (!$consumer) {
+            return redirect()->to(base_url('admin/consumers'))->with('error', 'Consumer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 0]);
+        
+        return redirect()->to(base_url('admin/consumers'))->with('success', 'Consumer deactivated successfully.');
+    }
+
+    public function activateConsumer(int $id)
+    {
+        $consumer = $this->userModel->where('user_id', $id)->where('role', 'consumer')->first();
+
+        if (!$consumer) {
+            return redirect()->to(base_url('admin/consumers'))->with('error', 'Consumer not found.');
+        }
+
+        $this->userModel->update($id, ['isActive' => 1]);
+        
+        return redirect()->to(base_url('admin/consumers'))->with('success', 'Consumer activated successfully.');
+    }   
 
     public function orders()
     {
@@ -212,4 +314,89 @@ class AdminController extends BaseController
             'orderStatus' => $orderStatus
         ]);
     }
+
+    public function profile()
+    {
+        $user = $this->userModel->where('user_id', session()->get('user_id'))->first();
+        return view('admin/admin_profile', [
+            'title' => 'Admin Profile - SolarSoil',
+            'user' => $user
+        ]);
+    }
+
+    public function editProfile()
+    {
+        $user = $this->userModel->where('user_id', session()->get('user_id'))->first();
+        return view('admin/admin_editprofile', [
+            'title' => 'Edit Admin Profile - SolarSoil',
+            'user' => $user
+        ]);
+    }
+    public function updateProfile()
+    {
+        $userId = session()->get('user_id');
+        $user = $this->userModel->where('user_id', $userId)->first();
+
+        if (!$user) {
+            return redirect()->to(base_url('admin/profile'))->with('error', 'User not found.');
+        }
+
+        // Validate using the adminProfile rule group from Validation.php
+        if (!$this->validate('adminProfile')) {
+            session()->remove('tab');
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+        if ($this->request->getPost('email') !== $user['email']) {
+            // Check if the new email is already taken by another user
+            $existingUser = $this->userModel->where('email', $this->request->getPost('email'))->first();
+            if ($existingUser) {
+                session()->remove('tab');
+                return redirect()->back()->withInput()->with('error', 'This email address is already in use by another account.');
+            }
+        }
+
+        // Update user profile
+        $updateData = [
+            'first_name' => $this->request->getPost('first_name'),
+            'last_name' => $this->request->getPost('last_name'),
+            'email' => $this->request->getPost('email'),
+            'contact_number' => $this->request->getPost('contact_number'),
+            'address' => $this->request->getPost('address')
+        ];
+
+        $this->userModel->update($userId, $updateData);
+
+        session()->remove('tab');
+        return redirect()->to(base_url('admin/profile'))->with('success', 'Profile updated successfully.');
+    }
+
+    public function changePassword()
+    {
+        $userId = session()->get('user_id');
+        $user = $this->userModel->where('user_id', $userId)->first();
+
+        if (!$user) {
+            return redirect()->to(base_url('admin/profile'))->with('error', 'User not found.');
+        }
+
+        // Validate using the changePassword rule group from Validation.php
+        if (!$this->validate('changePassword')) {
+            session()->set('tab', 'settings');
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // Verify current password
+        if (!password_verify($this->request->getPost('current_password'), $user['password'])) {
+            session()->set('tab', 'settings');
+            return redirect()->back()->withInput()->with('error', 'Current password is incorrect.');
+        }
+
+        // Update password
+        $newPassword = password_hash($this->request->getPost('new_password'), PASSWORD_DEFAULT);
+        $this->userModel->update($userId, ['password' => $newPassword]);
+
+        session()->set('tab', 'settings');
+        return redirect()->to(base_url('admin/profile'))->with('success', 'Password changed successfully.');
+    }
+
 }

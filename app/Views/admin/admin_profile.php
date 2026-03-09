@@ -38,7 +38,7 @@ $user = $user ?? [
 $fullName = trim($user['first_name'] . ' ' . ($user['middle_name'] ? $user['middle_name'] . ' ' : '') . $user['last_name'] . ($user['suffix'] ? ' ' . $user['suffix'] : ''));
 ?>
 
-<div x-data="{ tab: 'profile' }">
+<div x-data="{ tab: '<?= session()->get('tab') === 'settings' ? 'settings' : 'profile' ?>' }">
     <!-- Tabs -->
     <div class="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit mb-6">
         <button @click="tab = 'profile'" :class="tab === 'profile' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'" class="px-4 py-2 text-sm font-medium rounded-md transition">Personal Info</button>
@@ -47,6 +47,26 @@ $fullName = trim($user['first_name'] . ' ' . ($user['middle_name'] ? $user['midd
 
     <!-- Personal Info -->
     <div x-show="tab === 'profile'">
+        <!-- Success Message -->
+        <?php if (session()->getFlashdata('success') && session()->get('tab') !== 'settings'): ?>
+            <div class="flex items-center gap-3 p-4 mb-6 bg-green-50 border border-green-200 rounded-lg">
+                <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-sm font-medium text-green-800"><?= session()->getFlashdata('success') ?></p>
+            </div>
+        <?php endif; ?>
+
+        <!-- Error Message -->
+        <?php if (session()->getFlashdata('error') && session()->get('tab') !== 'settings'): ?>
+            <div class="flex items-center gap-3 p-4 mb-6 bg-red-50 border border-red-200 rounded-lg">
+                <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-sm font-medium text-red-800"><?= session()->getFlashdata('error') ?></p>
+            </div>
+        <?php endif; ?>
+
         <div class="bg-white rounded-xl border border-gray-100 p-6">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-4">
@@ -58,7 +78,8 @@ $fullName = trim($user['first_name'] . ' ' . ($user['middle_name'] ? $user['midd
                         <span class="inline-flex px-2.5 py-0.5 text-xs font-medium rounded-full bg-purple-50 text-purple-700 capitalize"><?= esc($user['role']) ?></span>
                     </div>
                 </div>
-                <button class="px-4 py-2 text-sm font-medium text-primary-600 border border-primary-200 hover:bg-primary-50 rounded-lg transition">Edit Profile</button>
+                <button class="px-4 py-2 text-sm font-medium text-primary-600 border border-primary-200 hover:bg-primary-50 rounded-lg transition" onclick="window.location.href='<?= base_url('admin/editprofile') ?>'">Edit Profile</button>
+
             </div>
             <div class="grid sm:grid-cols-2 gap-6">
                 <div>
@@ -93,22 +114,58 @@ $fullName = trim($user['first_name'] . ' ' . ($user['middle_name'] ? $user['midd
     <div x-show="tab === 'settings'" x-cloak>
         <div class="bg-white rounded-xl border border-gray-100 p-6 space-y-6">
             <h2 class="text-lg font-semibold text-gray-900">Account Settings</h2>
+
+            <!-- Success Message -->
+            <?php if (session()->getFlashdata('success') && session()->get('tab') === 'settings'): ?>
+                <div class="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-sm font-medium text-green-800"><?= session()->getFlashdata('success') ?></p>
+                </div>
+            <?php endif; ?>
+
+            <!-- Error Message -->
+            <?php if (session()->getFlashdata('error') && session()->get('tab') === 'settings'): ?>
+                <div class="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-sm font-medium text-red-800"><?= session()->getFlashdata('error') ?></p>
+                </div>
+            <?php endif; ?>
+
             <div>
                 <h3 class="text-sm font-semibold text-gray-900 mb-4">Change Password</h3>
-                <form class="space-y-4 max-w-md">
+                <form action="<?= base_url('admin/changepassword') ?>" method="POST" class="space-y-4 max-w-md">
+                    <?= csrf_field() ?>
+                    
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Current Password</label>
-                        <input type="password" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        <input type="password" name="current_password" class="w-full px-4 py-2.5 bg-gray-50 border <?= session('errors.current_password') ? 'border-red-300' : 'border-gray-200' ?> rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        <?php if (session('errors.current_password')): ?>
+                            <p class="mt-1 text-xs text-red-600"><?= session('errors.current_password') ?></p>
+                        <?php endif; ?>
                     </div>
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">New Password</label>
-                        <input type="password" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        <input type="password" name="new_password" class="w-full px-4 py-2.5 bg-gray-50 border <?= session('errors.new_password') ? 'border-red-300' : 'border-gray-200' ?> rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters long</p>
+                        <?php if (session('errors.new_password')): ?>
+                            <p class="mt-1 text-xs text-red-600"><?= session('errors.new_password') ?></p>
+                        <?php endif; ?>
                     </div>
+
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1.5">Confirm New Password</label>
-                        <input type="password" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        <input type="password" name="confirm_password" class="w-full px-4 py-2.5 bg-gray-50 border <?= session('errors.confirm_password') ? 'border-red-300' : 'border-gray-200' ?> rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                        <?php if (session('errors.confirm_password')): ?>
+                            <p class="mt-1 text-xs text-red-600"><?= session('errors.confirm_password') ?></p>
+                        <?php endif; ?>
                     </div>
-                    <button type="button" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition">Update Password</button>
+
+                    <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition">Update Password</button>
                 </form>
             </div>
         </div>

@@ -73,7 +73,11 @@
                         <td class="px-6 py-4 text-center">
                             <a href="<?= base_url('admin/consumers/' . $consumer['user_id']) ?>" class="text-sm text-primary-700 hover:text-primary-900 font-medium">View</a>
                             <span class="text-gray-300 mx-1">|</span>
-                            <button onclick="if(confirm('Are you sure you want to delete this consumer?')) window.location='<?= base_url('admin/consumers/delete/' . $consumer['user_id']) ?>'" class="text-sm text-red-500 hover:text-red-700 font-medium">Delete</button>
+                            <?php if ($consumer['isActive']): ?>
+                                <button onclick="if(confirm('Are you sure you want to deactivate this consumer?')) window.location='<?= base_url('admin/consumers/deactivate/' . $consumer['user_id']) ?>'" class="text-sm text-amber-500 hover:text-amber-700 font-medium">Deactivate</button>
+                            <?php else: ?>
+                                <button onclick="if(confirm('Are you sure you want to activate this consumer?')) window.location='<?= base_url('admin/consumers/activate/' . $consumer['user_id']) ?>'" class="text-sm text-green-500 hover:text-green-700 font-medium">Activate</button>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
