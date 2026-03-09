@@ -65,7 +65,7 @@ $stats = $stats ?? [
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                                <img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=80&h=80&fit=crop" alt="<?= esc($p['name']) ?>" class="w-full h-full object-cover">
+                                <img src="<?= base_url('public/uploads/products/' . $p['image']) ?>" alt="<?= esc($p['name']) ?>" class="w-full h-full object-cover">
                             </div>
                             <span class="text-sm font-medium text-gray-900"><?= esc($p['name']) ?></span>
                         </div>
