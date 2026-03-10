@@ -10,6 +10,7 @@ class ProductModel extends Model
     protected $primaryKey = 'product_id';
 
     protected $allowedFields = [
+        'user_id',
         'image',
         'name',
         'price',

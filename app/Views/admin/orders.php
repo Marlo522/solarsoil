@@ -31,50 +31,43 @@
 
 <?php
 $orders = $orders ?? [
-    ['order_id' => 1001, 'customer' => 'Ana Reyes',     'items' => 3, 'total' => 450.00,  'status' => 'processing', 'payment' => 'GCash',  'created_at' => '2024-12-15'],
-    ['order_id' => 1002, 'customer' => 'Carlos Lopez',  'items' => 5, 'total' => 1200.00, 'status' => 'delivered',  'payment' => 'COD',    'created_at' => '2024-12-14'],
-    ['order_id' => 1003, 'customer' => 'Ana Reyes',     'items' => 2, 'total' => 320.00,  'status' => 'pending',    'payment' => 'GCash',  'created_at' => '2024-12-14'],
-    ['order_id' => 1004, 'customer' => 'Marco Villanueva', 'items' => 1, 'total' => 150.00, 'status' => 'shipped',  'payment' => 'COD',    'created_at' => '2024-12-13'],
-    ['order_id' => 1005, 'customer' => 'Lisa Mendoza',  'items' => 4, 'total' => 880.00,  'status' => 'delivered',  'payment' => 'GCash',  'created_at' => '2024-12-12'],
-    ['order_id' => 1006, 'customer' => 'Jose Santos',   'items' => 2, 'total' => 260.00,  'status' => 'cancelled',  'payment' => 'COD',    'created_at' => '2024-12-11'],
-    ['order_id' => 1007, 'customer' => 'Maria Clara',   'items' => 6, 'total' => 1540.00, 'status' => 'processing', 'payment' => 'GCash',  'created_at' => '2024-12-10'],
-    ['order_id' => 1008, 'customer' => 'Pedro Garcia',  'items' => 3, 'total' => 720.00,  'status' => 'pending',    'payment' => 'COD',    'created_at' => '2024-12-09'],
+    ['order_id' => 1001, 'consumer_name' => 'Ana Reyes',        'total_amount' => 450.00,  'status' => 'pending',    'created_at' => '2024-12-15'],
+    ['order_id' => 1002, 'consumer_name' => 'Carlos Lopez',     'total_amount' => 1200.00, 'status' => 'completed',  'created_at' => '2024-12-14'],
+    ['order_id' => 1003, 'consumer_name' => 'Ana Reyes',        'total_amount' => 320.00,  'status' => 'pending',    'created_at' => '2024-12-14'],
+    ['order_id' => 1004, 'consumer_name' => 'Marco Villanueva', 'total_amount' => 150.00,  'status' => 'completed',  'created_at' => '2024-12-13'],
+    ['order_id' => 1005, 'consumer_name' => 'Lisa Mendoza',     'total_amount' => 880.00,  'status' => 'completed',  'created_at' => '2024-12-12'],
+    ['order_id' => 1006, 'consumer_name' => 'Jose Santos',      'total_amount' => 260.00,  'status' => 'pending',    'created_at' => '2024-12-11'],
+    ['order_id' => 1007, 'consumer_name' => 'Maria Clara',      'total_amount' => 1540.00, 'status' => 'pending',    'created_at' => '2024-12-10'],
+    ['order_id' => 1008, 'consumer_name' => 'Pedro Garcia',     'total_amount' => 720.00,  'status' => 'completed',  'created_at' => '2024-12-09'],
 ];
 
 $statusColors = [
-    'pending'    => 'bg-amber-50 text-amber-700',
-    'processing' => 'bg-blue-50 text-blue-700',
-    'shipped'    => 'bg-purple-50 text-purple-700',
-    'delivered'  => 'bg-green-50 text-green-700',
-    'cancelled'  => 'bg-red-50 text-red-700',
+    'pending'   => 'bg-yellow-100 text-yellow-800',
+    'completed' => 'bg-green-100 text-green-800',
 ];
 ?>
 
 <h1 class="text-2xl font-bold text-gray-900 mb-6">Order Management</h1>
 
 <!-- Stats Cards -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
     <?php
-    $statusCounts = ['pending' => 0, 'processing' => 0, 'shipped' => 0, 'delivered' => 0];
+    $statusCounts = ['pending' => 0, 'completed' => 0];
     foreach ($orders as $o) {
         if (isset($statusCounts[$o['status']])) $statusCounts[$o['status']]++;
     }
     ?>
     <div class="bg-white rounded-xl border border-gray-100 p-4">
+        <p class="text-xs font-medium text-gray-500 uppercase">Total Orders</p>
+        <p class="text-2xl font-bold text-gray-900 mt-1"><?= count($orders) ?></p>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 p-4">
         <p class="text-xs font-medium text-gray-500 uppercase">Pending</p>
-        <p class="text-2xl font-bold text-amber-600 mt-1"><?= $statusCounts['pending'] ?></p>
+        <p class="text-2xl font-bold text-yellow-600 mt-1"><?= $statusCounts['pending'] ?></p>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 p-4">
-        <p class="text-xs font-medium text-gray-500 uppercase">Processing</p>
-        <p class="text-2xl font-bold text-blue-600 mt-1"><?= $statusCounts['processing'] ?></p>
-    </div>
-    <div class="bg-white rounded-xl border border-gray-100 p-4">
-        <p class="text-xs font-medium text-gray-500 uppercase">Shipped</p>
-        <p class="text-2xl font-bold text-purple-600 mt-1"><?= $statusCounts['shipped'] ?></p>
-    </div>
-    <div class="bg-white rounded-xl border border-gray-100 p-4">
-        <p class="text-xs font-medium text-gray-500 uppercase">Delivered</p>
-        <p class="text-2xl font-bold text-green-600 mt-1"><?= $statusCounts['delivered'] ?></p>
+        <p class="text-xs font-medium text-gray-500 uppercase">Completed</p>
+        <p class="text-2xl font-bold text-green-600 mt-1"><?= $statusCounts['completed'] ?></p>
     </div>
 </div>
 
@@ -90,10 +83,7 @@ $statusColors = [
         <select class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
-            <option value="processing">Processing</option>
-            <option value="shipped">Shipped</option>
-            <option value="delivered">Delivered</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="completed">Completed</option>
         </select>
     </div>
 </div>
@@ -105,10 +95,8 @@ $statusColors = [
             <thead>
                 <tr class="bg-primary-800 text-white">
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Order ID</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Customer</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Items</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Total</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Payment</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Consumer Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Total Amount</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Date</th>
                     <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Actions</th>
@@ -118,25 +106,23 @@ $statusColors = [
                 <?php if (!empty($orders)): ?>
                     <?php foreach ($orders as $order): ?>
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#<?= esc($order['order_id']) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-700"><?= esc($order['customer']) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-700"><?= esc($order['items']) ?></td>
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">&#8369;<?= number_format($order['total'], 2) ?></td>
-                        <td class="px-6 py-4 text-sm text-gray-700"><?= esc($order['payment']) ?></td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#ORD<?= esc($order['order_id']) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-700"><?= esc($order['consumer_name'] ?? 'N/A') ?></td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">&#8369;<?= number_format($order['total_amount'] ?? 0, 2) ?></td>
                         <td class="px-6 py-4">
-                            <span class="px-2.5 py-0.5 text-xs font-medium rounded-full <?= $statusColors[$order['status']] ?? 'bg-gray-50 text-gray-700' ?>">
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full <?= $statusColors[$order['status']] ?? 'bg-gray-100 text-gray-800' ?>">
                                 <?= ucfirst(esc($order['status'])) ?>
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500"><?= date('M d, Y', strtotime($order['created_at'])) ?></td>
                         <td class="px-6 py-4 text-center">
-                            <button class="text-sm text-primary-700 hover:text-primary-900 font-medium">View</button>
+                            <a href="<?= base_url('admin/orders/' . $order['order_id']) ?>" class="text-sm text-primary-700 hover:text-primary-900 font-medium">View</a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-sm text-gray-400">No orders found.</td>
+                        <td colspan="6" class="px-6 py-12 text-center text-sm text-gray-400">No orders found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
