@@ -58,6 +58,12 @@
                     <p class="text-sm text-gray-500 mt-1">Showing <?= count($products ?? []) ?> products</p>
                 </div>
                 <div class="flex items-center gap-3">
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                        <input type="text" placeholder="Search products..."
+                               class="w-48 sm:w-64 pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 transition" />
+                    </div>
                     <select class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500">
                         <option>Sort by: Latest</option>
                         <option>Price: Low to High</option>

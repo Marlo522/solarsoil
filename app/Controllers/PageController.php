@@ -21,7 +21,7 @@ class PageController extends BaseController
 
     public function about(): string
     {
-        return view('pages/home', ['pageTitle' => 'About']);
+        return view('pages/about', ['pageTitle' => 'About']);
     }
 
     public function login(): string

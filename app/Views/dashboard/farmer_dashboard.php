@@ -38,7 +38,21 @@ $stats = $stats ?? [
 </div>
 
 <!-- Products Table -->
-<div class="bg-white rounded-xl border border-gray-100" x-data="{ showAddModal: false }">
+<div class="bg-white rounded-xl border border-gray-100" x-data="{
+    showAddModal: false,
+    showEditModal: false,
+    showDeleteModal: false,
+    editProduct: { product_id: '', name: '', category: '', price: '', stock_quantity: '', description: '' },
+    deleteProduct: { product_id: '', name: '' },
+    openEdit(product) {
+        this.editProduct = { ...product, description: product.description || '' };
+        this.showEditModal = true;
+    },
+    openDelete(product) {
+        this.deleteProduct = { product_id: product.product_id, name: product.name };
+        this.showDeleteModal = true;
+    }
+}">
     <div class="flex items-center justify-between p-6 border-b border-gray-100">
         <h2 class="font-semibold text-gray-900">My Products</h2>
         <button @click="showAddModal = true" class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition">
@@ -78,11 +92,14 @@ $stats = $stats ?? [
                         <span class="text-sm <?= $p['stock_quantity'] > 0 ? 'text-green-600' : 'text-red-600' ?>"><?= $p['stock_quantity'] ?></span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <div class="flex items-center justify-end gap-2">
-                            <button class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition" title="Edit">
+                        <div class="flex items-center justify-end gap-1">
+                            <button class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition" title="View">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </button>
+                            <button @click="openEdit(<?= esc(json_encode($p), 'attr') ?>)" class="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
                             </button>
-                            <button class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                            <button @click="openDelete(<?= esc(json_encode($p), 'attr') ?>)" class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
                             </button>
                         </div>
@@ -91,6 +108,91 @@ $stats = $stats ?? [
                 <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div x-show="showEditModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/40" @click="showEditModal = false"></div>
+        <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
+            <div class="flex items-center justify-between p-6 border-b border-gray-100">
+                <h3 class="text-lg font-semibold text-gray-900">Edit Product</h3>
+                <button @click="showEditModal = false" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <form method="POST" enctype="multipart/form-data" class="p-6 space-y-4">
+                <input type="hidden" name="product_id" :value="editProduct.product_id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Name</label>
+                    <input type="text" name="name" x-model="editProduct.name" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" placeholder="e.g. Fresh Tomatoes">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+                        <select name="category" x-model="editProduct.category" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition">
+                            <option value="">Select</option>
+                            <option>Vegetables</option>
+                            <option>Fruits</option>
+                            <option>Grains</option>
+                            <option>Herbs</option>
+                            <option>Dairy</option>
+                            <option>Organic</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Price (&#8369;)</label>
+                        <input type="number" name="price" step="0.01" min="0" x-model="editProduct.price" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" placeholder="0.00">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Stock Quantity</label>
+                    <input type="number" name="stock_quantity" min="0" x-model="editProduct.stock_quantity" required class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" placeholder="0">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                    <textarea name="description" rows="3" x-model="editProduct.description" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition resize-none" placeholder="Describe your product..."></textarea>
+                </div>
+                <div x-data="{ imagePreview: null }">
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Product Image</label>
+                    <label class="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-primary-300 transition cursor-pointer block">
+                        <template x-if="imagePreview">
+                            <img :src="imagePreview" class="w-32 h-32 object-cover rounded-lg mx-auto mb-3">
+                        </template>
+                        <template x-if="!imagePreview">
+                            <svg class="w-8 h-8 text-gray-300 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909"/></svg>
+                        </template>
+                        <p class="text-sm text-gray-500">Click to upload or drag and drop</p>
+                        <p class="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                        <input type="file" name="image" accept="image/*" class="hidden" @change="imagePreview = URL.createObjectURL($event.target.files[0])">
+                    </label>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" @click="showEditModal = false" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 rounded-lg transition">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div x-show="showDeleteModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/40" @click="showDeleteModal = false"></div>
+        <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm" @click.stop>
+            <div class="p-6 text-center">
+                <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Delete Product</h3>
+                <p class="text-sm text-gray-500 mb-6">Are you sure you want to delete <span class="font-medium text-gray-700" x-text="deleteProduct.name"></span>? This action cannot be undone.</p>
+                <div class="flex gap-3">
+                    <button type="button" @click="showDeleteModal = false" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 rounded-lg transition">Cancel</button>
+                    <form method="POST">
+                        <input type="hidden" name="product_id" :value="deleteProduct.product_id">
+                        <button type="submit" class="w-full px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Add Product Modal -->

@@ -29,6 +29,14 @@
 
 <?= $this->section('content') ?>
 
+<div x-data="{
+    showToggleModal: false,
+    toggleUser: { id: null, name: '', isActive: true },
+    openToggle(id, name, isActive) {
+        this.toggleUser = { id, name, isActive };
+        this.showToggleModal = true;
+    }
+}">
 <h1 class="text-2xl font-bold text-gray-900 mb-6">Consumers Management</h1>
 
 <!-- Search and Filter -->
@@ -70,14 +78,21 @@
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($consumer['first_name'] . ' ' . $consumer['last_name']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($consumer['address'] ?? 'N/A') ?></td>
                         <td class="px-6 py-4 text-sm text-gray-500"><?= date('F j, Y', strtotime($consumer['date_joined'] ?? $consumer['created_at'] ?? 'now')) ?></td>
-                        <td class="px-6 py-4 text-center">
-                            <a href="<?= base_url('admin/consumers/' . $consumer['user_id']) ?>" class="text-sm text-primary-700 hover:text-primary-900 font-medium">View</a>
-                            <span class="text-gray-300 mx-1">|</span>
-                            <?php if ($consumer['isActive']): ?>
-                                <button onclick="if(confirm('Are you sure you want to deactivate this consumer?')) window.location='<?= base_url('admin/consumers/deactivate/' . $consumer['user_id']) ?>'" class="text-sm text-amber-500 hover:text-amber-700 font-medium">Deactivate</button>
-                            <?php else: ?>
-                                <button onclick="if(confirm('Are you sure you want to activate this consumer?')) window.location='<?= base_url('admin/consumers/activate/' . $consumer['user_id']) ?>'" class="text-sm text-green-500 hover:text-green-700 font-medium">Activate</button>
-                            <?php endif; ?>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-center gap-1">
+                                <a href="<?= base_url('admin/consumers/' . $consumer['user_id']) ?>" class="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition" title="View">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.64 0 8.577 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.64 0-8.577-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                </a>
+                                <?php if ($consumer['isActive']): ?>
+                                <button @click="openToggle(<?= $consumer['user_id'] ?>, '<?= esc($consumer['first_name'] . ' ' . $consumer['last_name'], 'js') ?>', true)" class="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Deactivate">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                </button>
+                                <?php else: ?>
+                                <button @click="openToggle(<?= $consumer['user_id'] ?>, '<?= esc($consumer['first_name'] . ' ' . $consumer['last_name'], 'js') ?>', false)" class="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition" title="Activate">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </button>
+                                <?php endif; ?>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -110,5 +125,37 @@
     <?php endif; ?>
 </div>
 <?php endif; ?>
+
+<!-- Deactivate/Activate Confirmation Modal -->
+<div x-show="showToggleModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" @click="showToggleModal = false">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6" @click.stop>
+        <div class="text-center">
+            <!-- Deactivate icon -->
+            <template x-if="toggleUser.isActive">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-amber-100 mb-4">
+                    <svg class="h-6 w-6 text-amber-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                </div>
+            </template>
+            <!-- Activate icon -->
+            <template x-if="!toggleUser.isActive">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                    <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+            </template>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2" x-text="toggleUser.isActive ? 'Deactivate Consumer' : 'Activate Consumer'"></h3>
+            <p class="text-sm text-gray-500 mb-6">Are you sure you want to <span x-text="toggleUser.isActive ? 'deactivate' : 'activate'" class="font-medium"></span> <span x-text="toggleUser.name" class="font-medium"></span>?</p>
+        </div>
+        <div class="flex gap-3">
+            <button @click="showToggleModal = false" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition">Cancel</button>
+            <template x-if="toggleUser.isActive">
+                <a :href="`<?= base_url('admin/consumers/deactivate/') ?>` + toggleUser.id" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition text-center">Deactivate</a>
+            </template>
+            <template x-if="!toggleUser.isActive">
+                <a :href="`<?= base_url('admin/consumers/activate/') ?>` + toggleUser.id" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition text-center">Activate</a>
+            </template>
+        </div>
+    </div>
+</div>
+</div><!-- end x-data -->
 
 <?= $this->endSection() ?>
