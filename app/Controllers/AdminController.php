@@ -315,6 +315,34 @@ class AdminController extends BaseController
         ]);
     }
 
+    public function products()
+    {
+        $page = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $offset = ($page - 1) * $this->perPage;
+
+        $products = $this->productModel
+            ->where('isDeleted', 0)
+            ->orderBy('product_id', 'DESC')
+            ->findAll($this->perPage, $offset);
+
+        $totalProducts = $this->productModel->where('isDeleted', 0)->countAllResults(false);
+        $totalPages = max(1, (int) ceil($totalProducts / $this->perPage));
+
+        // Enrich products with seller info
+        foreach ($products as &$product) {
+            $seller = $this->userModel->where('user_id', $product['user_id'] ?? 0)->first();
+            $product['seller'] = $seller ? $seller['first_name'] . ' ' . $seller['last_name'] : 'Unknown';
+            $product['status'] = ($product['stock_quantity'] ?? 0) > 0 ? 'active' : 'out_of_stock';
+        }
+
+        return view('admin/products', [
+            'title'       => 'Product Management - SolarSoil',
+            'products'    => $products,
+            'currentPage' => $page,
+            'totalPages'  => $totalPages,
+        ]);
+    }
+
     public function profile()
     {
         $user = $this->userModel->where('user_id', session()->get('user_id'))->first();
