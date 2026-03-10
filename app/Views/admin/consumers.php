@@ -66,6 +66,7 @@
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Consumer ID</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Consumer Name</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Address</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Date Joined</th>
                     <th class="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Actions</th>
                 </tr>
@@ -77,6 +78,13 @@
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">#CMR<?= esc($consumer['user_id']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($consumer['first_name'] . ' ' . $consumer['last_name']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($consumer['address'] ?? 'N/A') ?></td>
+                        <td class="px-6 py-4 text-sm">
+                            <?php if ($consumer['isActive']): ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+                            <?php else: ?>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Inactive</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="px-6 py-4 text-sm text-gray-500"><?= date('F j, Y', strtotime($consumer['date_joined'] ?? $consumer['created_at'] ?? 'now')) ?></td>
                         <td class="px-6 py-4">
                             <div class="flex items-center justify-center gap-1">

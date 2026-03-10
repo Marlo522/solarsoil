@@ -30,20 +30,10 @@
 <?= $this->section('content') ?>
 
 <?php
-$orders = $orders ?? [
-    ['order_id' => 1001, 'consumer_name' => 'Ana Reyes',        'total_amount' => 450.00,  'status' => 'pending',    'created_at' => '2024-12-15'],
-    ['order_id' => 1002, 'consumer_name' => 'Carlos Lopez',     'total_amount' => 1200.00, 'status' => 'completed',  'created_at' => '2024-12-14'],
-    ['order_id' => 1003, 'consumer_name' => 'Ana Reyes',        'total_amount' => 320.00,  'status' => 'pending',    'created_at' => '2024-12-14'],
-    ['order_id' => 1004, 'consumer_name' => 'Marco Villanueva', 'total_amount' => 150.00,  'status' => 'completed',  'created_at' => '2024-12-13'],
-    ['order_id' => 1005, 'consumer_name' => 'Lisa Mendoza',     'total_amount' => 880.00,  'status' => 'completed',  'created_at' => '2024-12-12'],
-    ['order_id' => 1006, 'consumer_name' => 'Jose Santos',      'total_amount' => 260.00,  'status' => 'pending',    'created_at' => '2024-12-11'],
-    ['order_id' => 1007, 'consumer_name' => 'Maria Clara',      'total_amount' => 1540.00, 'status' => 'pending',    'created_at' => '2024-12-10'],
-    ['order_id' => 1008, 'consumer_name' => 'Pedro Garcia',     'total_amount' => 720.00,  'status' => 'completed',  'created_at' => '2024-12-09'],
-];
 
 $statusColors = [
     'pending'   => 'bg-yellow-100 text-yellow-800',
-    'completed' => 'bg-green-100 text-green-800',
+    'delivered' => 'bg-green-100 text-green-800',
 ];
 ?>
 
@@ -52,7 +42,7 @@ $statusColors = [
 <!-- Stats Cards -->
 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
     <?php
-    $statusCounts = ['pending' => 0, 'completed' => 0];
+    $statusCounts = ['pending' => 0, 'delivered' => 0];
     foreach ($orders as $o) {
         if (isset($statusCounts[$o['status']])) $statusCounts[$o['status']]++;
     }
@@ -66,8 +56,8 @@ $statusColors = [
         <p class="text-2xl font-bold text-yellow-600 mt-1"><?= $statusCounts['pending'] ?></p>
     </div>
     <div class="bg-white rounded-xl border border-gray-100 p-4">
-        <p class="text-xs font-medium text-gray-500 uppercase">Completed</p>
-        <p class="text-2xl font-bold text-green-600 mt-1"><?= $statusCounts['completed'] ?></p>
+        <p class="text-xs font-medium text-gray-500 uppercase">Delivered</p>
+        <p class="text-2xl font-bold text-green-600 mt-1"><?= $statusCounts['delivered'] ?></p>
     </div>
 </div>
 

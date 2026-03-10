@@ -343,6 +343,16 @@ class AdminController extends BaseController
         ]);
     }
 
+    public function productDetail(int $id)
+    {
+        $product = $this->productModel->where('product_id', $id)->where('isDeleted', 0)->first();
+
+        return view('admin/product_detail', [
+            'title' => 'Product #PRD' . $id . ' - SolarSoil',
+            'product' => $product
+        ]);
+    }
+
     public function profile()
     {
         $user = $this->userModel->where('user_id', session()->get('user_id'))->first();
@@ -364,10 +374,6 @@ class AdminController extends BaseController
     {
         $userId = session()->get('user_id');
         $user = $this->userModel->where('user_id', $userId)->first();
-
-        if (!$user) {
-            return redirect()->to(base_url('admin/profile'))->with('error', 'User not found.');
-        }
 
         // Validate using the adminProfile rule group from Validation.php
         if (!$this->validate('adminProfile')) {
@@ -393,7 +399,6 @@ class AdminController extends BaseController
         ];
 
         $this->userModel->update($userId, $updateData);
-
         session()->remove('tab');
         return redirect()->to(base_url('admin/profile'))->with('success', 'Profile updated successfully.');
     }
@@ -402,10 +407,6 @@ class AdminController extends BaseController
     {
         $userId = session()->get('user_id');
         $user = $this->userModel->where('user_id', $userId)->first();
-
-        if (!$user) {
-            return redirect()->to(base_url('admin/profile'))->with('error', 'User not found.');
-        }
 
         // Validate using the changePassword rule group from Validation.php
         if (!$this->validate('changePassword')) {

@@ -54,7 +54,7 @@ class DatabaseSeeder extends Seeder
             ['user_id' => $userIds[3], 'image' => 'apple.jpg', 'name' => 'Apples', 'price' => 150.00, 'stock_quantity' => 90, 'description' => 'Crisp red apples', 'category' => 'Fruits', 'isDeleted' => 0, 'date_added' => date('Y-m-d H:i:s')],
             ['user_id' => $userIds[3], 'image' => 'cucumber.jpg', 'name' => 'Cucumber', 'price' => 45.00, 'stock_quantity' => 100, 'description' => 'Fresh green cucumber', 'category' => 'Vegetables', 'isDeleted' => 0, 'date_added' => date('Y-m-d H:i:s')],
             ['user_id' => $userIds[3], 'image' => 'orange.jpg', 'name' => 'Oranges', 'price' => 100.00, 'stock_quantity' => 110, 'description' => 'Juicy sweet oranges', 'category' => 'Fruits', 'isDeleted' => 0, 'date_added' => date('Y-m-d H:i:s')],
-            ['user_id' => $userIds[1], 'image' => 'spinach.jpg', 'name' => 'Spinach', 'price' => 55.00, 'stock_quantity' => 70, 'description' => 'Fresh organic spinach', 'category' => 'Vegetables', 'isDeleted' => 0, 'date_added' => date('Y-m-d H:i:s')]
+            ['user_id' => $userIds[1], 'image' => 'public/pictures/spinach.jpg', 'name' => 'Spinach', 'price' => 55.00, 'stock_quantity' => 70, 'description' => 'Fresh organic spinach', 'category' => 'Vegetables', 'isDeleted' => 0, 'date_added' => date('Y-m-d H:i:s')]
         ];
 
         foreach ($productData as $product) {
@@ -84,7 +84,7 @@ class DatabaseSeeder extends Seeder
         
         $orderData = [
             ['user_id' => $userIds[0], 'cart_id' => $cartIds[0], 'shipping_method' => 'Standard Shipping', 'payment_method' => 'Cash on Delivery', 'status' => 'pending', 'created_at' => date('Y-m-d H:i:s'), 'isCompleted' => 0],
-            ['user_id' => $userIds[2], 'cart_id' => $cartIds[1], 'shipping_method' => 'Express Shipping', 'payment_method' => 'GCash', 'status' => 'completed', 'created_at' => date('Y-m-d H:i:s', strtotime('-2 days')), 'isCompleted' => 1]
+            ['user_id' => $userIds[2], 'cart_id' => $cartIds[1], 'shipping_method' => 'Express Shipping', 'payment_method' => 'GCash', 'status' => 'delivered', 'created_at' => date('Y-m-d H:i:s', strtotime('-2 days')), 'isCompleted' => 1]
         ];
 
         foreach ($orderData as $order) {
