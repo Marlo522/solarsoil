@@ -40,7 +40,7 @@ $routes->group('admin', static function ($routes) {
     $routes->get('farmers/(:num)', 'AdminController::farmerDetail/$1');
     $routes->get('consumers', 'AdminController::consumers');
     $routes->get('consumers/(:num)', 'AdminController::consumerDetail/$1');
-    $routes->get('orders', 'PageController::adminDashboard');
-    $routes->get('products', 'PageController::adminDashboard');
+    $routes->get('orders', 'PageController::adminOrders');
+    $routes->get('products', 'PageController::adminProducts');
     $routes->get('profile', 'PageController::adminProfile');
 });
