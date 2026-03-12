@@ -82,35 +82,36 @@ $productStatusColors = [
 </div>
 
 <!-- Search and Filter -->
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+<?php $qs = '&' . http_build_query(array_filter(['search' => $search ?? '', 'category' => ($category ?? 'all') !== 'all' ? $category : '', 'status' => ($status ?? 'all') !== 'all' ? $status : ''])); ?>
+<form method="GET" action="<?= base_url('admin/products') ?>" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
     <div class="relative w-full sm:w-64">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-        <input type="text" placeholder="Search Product ID or Name..."
+        <input type="text" name="search" placeholder="Search Product ID or Name..."
+               value="<?= esc($search ?? '') ?>"
                class="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition" />
     </div>
     <div class="flex items-center gap-3">
         <div class="flex items-center gap-2">
             <span class="text-sm text-gray-500">Category:</span>
-            <select class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
-                <option value="all">All</option>
-                <option value="vegetables">Vegetables</option>
-                <option value="fruits">Fruits</option>
-                <option value="herbs">Herbs</option>
-                <option value="grains">Grains</option>
-                <option value="dairy">Dairy</option>
+            <select name="category" onchange="this.form.submit()" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
+                <option value="all" <?= ($category ?? 'all') === 'all' ? 'selected' : '' ?>>All</option>
+                <option value="vegetables" <?= ($category ?? '') === 'vegetables' ? 'selected' : '' ?>>Vegetables</option>
+                <option value="fruits" <?= ($category ?? '') === 'fruits' ? 'selected' : '' ?>>Fruits</option>
+                <option value="herbs" <?= ($category ?? '') === 'herbs' ? 'selected' : '' ?>>Herbs</option>
+                <option value="grains" <?= ($category ?? '') === 'grains' ? 'selected' : '' ?>>Grains</option>
+                <option value="dairy" <?= ($category ?? '') === 'dairy' ? 'selected' : '' ?>>Dairy</option>
             </select>
         </div>
         <div class="flex items-center gap-2">
             <span class="text-sm text-gray-500">Status:</span>
-            <select class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
-                <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="out_of_stock">Out of Stock</option>
+            <select name="status" onchange="this.form.submit()" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
+                <option value="all" <?= ($status ?? 'all') === 'all' ? 'selected' : '' ?>>All</option>
+                <option value="active" <?= ($status ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
+                <option value="out_of_stock" <?= ($status ?? '') === 'out_of_stock' ? 'selected' : '' ?>>Out of Stock</option>
             </select>
         </div>
     </div>
-</div>
+</form>
 
 <!-- Table -->
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -133,7 +134,7 @@ $productStatusColors = [
                 <?php if (!empty($products)): ?>
                     <?php foreach ($products as $product): ?>
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#PRD<?= esc($product['product_id']) ?></td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#<?= esc($product['product_id']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700 font-medium"><?= esc($product['name']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($product['category']) ?></td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">&#8369;<?= number_format($product['price'], 2) ?></td>
@@ -188,16 +189,16 @@ $totalPages  = $totalPages ?? 1;
 <?php if ($totalPages > 1): ?>
 <div class="flex items-center justify-center gap-2 mt-6">
     <?php if ($currentPage > 1): ?>
-        <a href="<?= base_url('admin/products?page=' . ($currentPage - 1)) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Prev</a>
+        <a href="<?= base_url('admin/products?page=' . ($currentPage - 1) . $qs) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Prev</a>
     <?php endif; ?>
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?= base_url('admin/products?page=' . $i) ?>"
+        <a href="<?= base_url('admin/products?page=' . $i . $qs) ?>"
            class="px-3 py-1.5 text-sm rounded-lg transition <?= $i === $currentPage ? 'bg-primary-700 text-white' : 'text-gray-600 border border-gray-200 hover:bg-gray-50' ?>">
             <?= $i ?>
         </a>
     <?php endfor; ?>
     <?php if ($currentPage < $totalPages): ?>
-        <a href="<?= base_url('admin/products?page=' . ($currentPage + 1)) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Next</a>
+        <a href="<?= base_url('admin/products?page=' . ($currentPage + 1) . $qs) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Next</a>
     <?php endif; ?>
 </div>
 <?php endif; ?>

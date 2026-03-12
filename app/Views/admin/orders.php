@@ -62,21 +62,23 @@ $statusColors = [
 </div>
 
 <!-- Search and Filter -->
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+<?php $qs = '&' . http_build_query(array_filter(['search' => $search ?? '', 'status' => ($status ?? 'all') !== 'all' ? $status : ''])); ?>
+<form method="GET" action="<?= base_url('admin/orders') ?>" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
     <div class="relative w-full sm:w-64">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-        <input type="text" placeholder="Search Order ID or Customer..."
+        <input type="text" name="search" placeholder="Search Order ID or Customer..."
+               value="<?= esc($search ?? '') ?>"
                class="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition" />
     </div>
     <div class="flex items-center gap-2">
         <span class="text-sm text-gray-500">Filter by:</span>
-        <select class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
+        <select name="status" onchange="this.form.submit()" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
+            <option value="all" <?= ($status ?? 'all') === 'all' ? 'selected' : '' ?>>All Status</option>
+            <option value="pending" <?= ($status ?? '') === 'pending' ? 'selected' : '' ?>>Pending</option>
+            <option value="delivered" <?= ($status ?? '') === 'delivered' ? 'selected' : '' ?>>Delivered</option>
         </select>
     </div>
-</div>
+</form>
 
 <!-- Table -->
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -96,7 +98,7 @@ $statusColors = [
                 <?php if (!empty($orders)): ?>
                     <?php foreach ($orders as $order): ?>
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#ORD<?= esc($order['order_id']) ?></td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#<?= esc($order['order_id']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($order['consumer_name'] ?? 'N/A') ?></td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">&#8369;<?= number_format($order['total_amount'] ?? 0, 2) ?></td>
                         <td class="px-6 py-4">
@@ -132,16 +134,16 @@ $totalPages  = $totalPages ?? 1;
 <?php if ($totalPages > 1): ?>
 <div class="flex items-center justify-center gap-2 mt-6">
     <?php if ($currentPage > 1): ?>
-        <a href="<?= base_url('admin/orders?page=' . ($currentPage - 1)) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Prev</a>
+        <a href="<?= base_url('admin/orders?page=' . ($currentPage - 1) . $qs) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Prev</a>
     <?php endif; ?>
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?= base_url('admin/orders?page=' . $i) ?>"
+        <a href="<?= base_url('admin/orders?page=' . $i . $qs) ?>"
            class="px-3 py-1.5 text-sm rounded-lg transition <?= $i === $currentPage ? 'bg-primary-700 text-white' : 'text-gray-600 border border-gray-200 hover:bg-gray-50' ?>">
             <?= $i ?>
         </a>
     <?php endfor; ?>
     <?php if ($currentPage < $totalPages): ?>
-        <a href="<?= base_url('admin/orders?page=' . ($currentPage + 1)) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Next</a>
+        <a href="<?= base_url('admin/orders?page=' . ($currentPage + 1) . $qs) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Next</a>
     <?php endif; ?>
 </div>
 <?php endif; ?>

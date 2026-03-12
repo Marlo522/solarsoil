@@ -40,22 +40,23 @@
 <h1 class="text-2xl font-bold text-gray-900 mb-6">Consumers Management</h1>
 
 <!-- Search and Filter -->
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+<?php $qs = '&' . http_build_query(array_filter(['search' => $search ?? '', 'status' => ($status ?? 'all') !== 'all' ? $status : ''])); ?>
+<form method="GET" action="<?= base_url('admin/consumers') ?>" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
     <div class="relative w-full sm:w-64">
         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-        <input type="text" placeholder="Search Consumer ID..."
+        <input type="text" name="search" placeholder="Search Consumer ID or Name..."
+               value="<?= esc($search ?? '') ?>"
                class="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition" />
     </div>
     <div class="flex items-center gap-2">
         <span class="text-sm text-gray-500">Filter by:</span>
-        <select class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
-            <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="pending">Pending</option>
-            <option value="inactive">Inactive</option>
+        <select name="status" onchange="this.form.submit()" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
+            <option value="all" <?= ($status ?? 'all') === 'all' ? 'selected' : '' ?>>All</option>
+            <option value="active" <?= ($status ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
+            <option value="inactive" <?= ($status ?? '') === 'inactive' ? 'selected' : '' ?>>Inactive</option>
         </select>
     </div>
-</div>
+</form>
 
 <!-- Table -->
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -75,7 +76,7 @@
                 <?php if (!empty($consumers)): ?>
                     <?php foreach ($consumers as $consumer): ?>
                     <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#CMR<?= esc($consumer['user_id']) ?></td>
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">#<?= esc($consumer['user_id']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($consumer['first_name'] . ' ' . $consumer['last_name']) ?></td>
                         <td class="px-6 py-4 text-sm text-gray-700"><?= esc($consumer['address'] ?? 'N/A') ?></td>
                         <td class="px-6 py-4 text-sm">
@@ -118,18 +119,18 @@
 <?php if (!empty($pager)): ?>
 <div class="flex items-center justify-center gap-2 mt-6">
     <?php if ($currentPage > 1): ?>
-        <a href="<?= base_url('admin/consumers?page=' . ($currentPage - 1)) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Prev</a>
+        <a href="<?= base_url('admin/consumers?page=' . ($currentPage - 1) . $qs) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Prev</a>
     <?php endif; ?>
 
     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-        <a href="<?= base_url('admin/consumers?page=' . $i) ?>"
+        <a href="<?= base_url('admin/consumers?page=' . $i . $qs) ?>"
            class="px-3 py-1.5 text-sm rounded-lg transition <?= $i === $currentPage ? 'bg-primary-700 text-white' : 'text-gray-600 border border-gray-200 hover:bg-gray-50' ?>">
             <?= $i ?>
         </a>
     <?php endfor; ?>
 
     <?php if ($currentPage < $totalPages): ?>
-        <a href="<?= base_url('admin/consumers?page=' . ($currentPage + 1)) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Next</a>
+        <a href="<?= base_url('admin/consumers?page=' . ($currentPage + 1) . $qs) ?>" class="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition">Next</a>
     <?php endif; ?>
 </div>
 <?php endif; ?>
