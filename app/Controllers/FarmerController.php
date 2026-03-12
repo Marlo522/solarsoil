@@ -55,13 +55,23 @@ class FarmerController extends BaseController
     public function editProduct($id)
 {
     $productModel = new ProductModel();
+    $image = $this->request->getFile('image');
+        $imageName = null;
 
+        if ($image && $image->isValid() && !$image->hasMoved()) {
+
+            $imageName = $image->getRandomName();
+
+            $image->move(ROOTPATH . 'public/uploads/products', $imageName);
+        }
+        
     $data = [
         'name' => $this->request->getPost('name'),
         'category' => $this->request->getPost('category'),
         'price' => $this->request->getPost('price'),
         'stock_quantity' => $this->request->getPost('stock_quantity'),
-        'description' => $this->request->getPost('description')
+        'description' => $this->request->getPost('description'),
+        'image' => $imageName
     ];
 
     $productModel->update($id, $data);
