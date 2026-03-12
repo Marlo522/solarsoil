@@ -62,7 +62,7 @@ class AdminController extends BaseController
             $order['total'] = $subtotal + $shippingFee;
         }
         
-        return view('dashboard/admin_dashboard', [
+        return view('admin/dashboard', [
             'title' => 'Admin Dashboard - SolarSoil',
             'totalFarmers' => $totalFarmers,
             'totalConsumers' => $totalConsumers,
