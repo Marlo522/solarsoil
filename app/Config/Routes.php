@@ -30,8 +30,10 @@ $routes->get('profile', 'PageController::profile', ['filter' => 'auth:consumer']
 // Farmer dashboard
 $routes->group('farmer', ['filter' => 'auth:seller'], static function ($routes) {
     $routes->get('dashboard', 'FarmerController::index');
-    $routes->get('products', 'PageController::farmerDashboard');
-    $routes->get('orders', 'PageController::farmerDashboard');
+    $routes->get('products', 'FarmerController::products');
+    $routes->get('products/(:num)', 'FarmerController::productDetail/$1');
+    $routes->get('orders', 'FarmerController::orders');
+    $routes->get('orders/(:num)', 'FarmerController::orderDetail/$1');
     $routes->get('profile', 'PageController::farmerProfile');
     $routes->post('products/add', 'FarmerController::addProduct');
     $routes->post('products/edit/(:num)', 'FarmerController::editProduct/$1');

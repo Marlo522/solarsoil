@@ -62,7 +62,7 @@ class AdminController extends BaseController
             $order['total'] = $subtotal + $shippingFee;
         }
         
-        return view('dashboard/admin_dashboard', [
+        return view('admin/dashboard', [
             'title' => 'Admin Dashboard - SolarSoil',
             'totalFarmers' => $totalFarmers,
             'totalConsumers' => $totalConsumers,
@@ -76,16 +76,35 @@ class AdminController extends BaseController
 
     public function farmers()
     {
-        $page = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $page   = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $search = trim($this->request->getGet('search') ?? '');
+        $status = trim($this->request->getGet('status') ?? 'all');
         $offset = ($page - 1) * $this->perPage;
 
-        $farmers = $this->userModel
-            ->where('role', 'seller')
+        $builder = $this->userModel->where('role', 'seller');
+
+        // Search by ID or name
+        if ($search !== '') {
+            $builder->groupStart()
+                ->like('user_id', $search)
+                ->orLike('first_name', $search)
+                ->orLike('last_name', $search)
+            ->groupEnd();
+        }
+
+        // Filter by status
+        if ($status === 'active') {
+            $builder->where('isActive', 1);
+        } elseif ($status === 'inactive') {
+            $builder->where('isActive', 0);
+        }
+
+        $totalFarmers = $builder->countAllResults(false);
+        $totalPages = max(1, (int) ceil($totalFarmers / $this->perPage));
+
+        $farmers = $builder
             ->orderBy('user_id', 'DESC')
             ->findAll($this->perPage, $offset);
-
-        $totalFarmers = $this->userModel->where('role', 'seller')->countAllResults(false);
-        $totalPages = max(1, (int) ceil($totalFarmers / $this->perPage));
 
         return view('admin/farmers', [
             'title'       => 'Farmer Management - SolarSoil',
@@ -93,6 +112,8 @@ class AdminController extends BaseController
             'currentPage' => $page,
             'totalPages'  => $totalPages,
             'pager'       => $totalPages > 1,
+            'search'      => $search,
+            'status'      => $status,
         ]);
     }
 
@@ -143,16 +164,35 @@ class AdminController extends BaseController
 
     public function consumers()
     {
-        $page = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $page   = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $search = trim($this->request->getGet('search') ?? '');
+        $status = trim($this->request->getGet('status') ?? 'all');
         $offset = ($page - 1) * $this->perPage;
 
-        $consumers = $this->userModel
-            ->where('role', 'consumer')
+        $builder = $this->userModel->where('role', 'consumer');
+
+        // Search by ID or name
+        if ($search !== '') {
+            $builder->groupStart()
+                ->like('user_id', $search)
+                ->orLike('first_name', $search)
+                ->orLike('last_name', $search)
+            ->groupEnd();
+        }
+
+        // Filter by status
+        if ($status === 'active') {
+            $builder->where('isActive', 1);
+        } elseif ($status === 'inactive') {
+            $builder->where('isActive', 0);
+        }
+
+        $totalConsumers = $builder->countAllResults(false);
+        $totalPages = max(1, (int) ceil($totalConsumers / $this->perPage));
+
+        $consumers = $builder
             ->orderBy('user_id', 'DESC')
             ->findAll($this->perPage, $offset);
-
-        $totalConsumers = $this->userModel->where('role', 'consumer')->countAllResults(false);
-        $totalPages = max(1, (int) ceil($totalConsumers / $this->perPage));
 
         return view('admin/consumers', [
             'title'       => 'Consumer Management - SolarSoil',
@@ -160,6 +200,8 @@ class AdminController extends BaseController
             'currentPage' => $page,
             'totalPages'  => $totalPages,
             'pager'       => $totalPages > 1,
+            'search'      => $search,
+            'status'      => $status,
         ]);
     }
 
@@ -208,12 +250,33 @@ class AdminController extends BaseController
 
     public function orders()
     {
-        $page = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $page   = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $search = trim($this->request->getGet('search') ?? '');
+        $status = trim($this->request->getGet('status') ?? 'all');
         $offset = ($page - 1) * $this->perPage;
 
-        $orders = $this->orderModel->orderBy('order_id', 'DESC')->findAll($this->perPage, $offset);
-        $totalOrders = $this->orderModel->countAllResults(false);
+        $builder = $this->orderModel;
+
+        // Search by order ID or consumer name (join users table)
+        if ($search !== '') {
+            $builder = $builder->select('orders.*')
+                ->join('users', 'users.user_id = orders.user_id', 'left')
+                ->groupStart()
+                    ->like('orders.order_id', $search)
+                    ->orLike('users.first_name', $search)
+                    ->orLike('users.last_name', $search)
+                ->groupEnd();
+        }
+
+        // Filter by status
+        if ($status !== 'all' && $status !== '') {
+            $builder->where('orders.status', $status);
+        }
+
+        $totalOrders = $builder->countAllResults(false);
         $totalPages = max(1, (int) ceil($totalOrders / $this->perPage));
+
+        $orders = $builder->orderBy('orders.order_id', 'DESC')->findAll($this->perPage, $offset);
 
         // Enrich orders with consumer info and calculate totals
         foreach ($orders as &$order) {
@@ -244,10 +307,12 @@ class AdminController extends BaseController
         }
 
         return view('admin/orders', [
-            'title' => 'Order Management - SolarSoil',
-            'orders' => $orders,
+            'title'       => 'Order Management - SolarSoil',
+            'orders'      => $orders,
             'currentPage' => $page,
-            'totalPages' => $totalPages,
+            'totalPages'  => $totalPages,
+            'search'      => $search,
+            'status'      => $status,
         ]);
     }
 
@@ -317,16 +382,40 @@ class AdminController extends BaseController
 
     public function products()
     {
-        $page = max(1, (int) ($this->request->getGet('page') ?? 1));
-        $offset = ($page - 1) * $this->perPage;
+        $page     = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $search   = trim($this->request->getGet('search') ?? '');
+        $category = trim($this->request->getGet('category') ?? 'all');
+        $status   = trim($this->request->getGet('status') ?? 'all');
+        $offset   = ($page - 1) * $this->perPage;
 
-        $products = $this->productModel
-            ->where('isDeleted', 0)
+        $builder = $this->productModel->where('isDeleted', 0);
+
+        // Search by ID or name
+        if ($search !== '') {
+            $builder->groupStart()
+                ->like('product_id', $search)
+                ->orLike('name', $search)
+            ->groupEnd();
+        }
+
+        // Filter by category
+        if ($category !== 'all' && $category !== '') {
+            $builder->where('category', $category);
+        }
+
+        // Filter by stock status
+        if ($status === 'active') {
+            $builder->where('stock_quantity >', 0);
+        } elseif ($status === 'out_of_stock') {
+            $builder->where('stock_quantity', 0);
+        }
+
+        $totalProducts = $builder->countAllResults(false);
+        $totalPages = max(1, (int) ceil($totalProducts / $this->perPage));
+
+        $products = $builder
             ->orderBy('product_id', 'DESC')
             ->findAll($this->perPage, $offset);
-
-        $totalProducts = $this->productModel->where('isDeleted', 0)->countAllResults(false);
-        $totalPages = max(1, (int) ceil($totalProducts / $this->perPage));
 
         // Enrich products with seller info
         foreach ($products as &$product) {
@@ -340,6 +429,9 @@ class AdminController extends BaseController
             'products'    => $products,
             'currentPage' => $page,
             'totalPages'  => $totalPages,
+            'search'      => $search,
+            'category'    => $category,
+            'status'      => $status,
         ]);
     }
 

@@ -51,11 +51,11 @@ class PageController extends BaseController
 
     public function adminDashboard(): string
     {
-        return view('dashboard/admin_dashboard', ['pageTitle' => 'Admin Dashboard']);
+        return view('admin/dashboard', ['pageTitle' => 'Admin Dashboard']);
     }
 
     public function farmerProfile(): string
     {
-        return view('dashboard/farmer_profile', ['pageTitle' => 'Profile']);
+        return view('farmer/profile', ['pageTitle' => 'Profile']);
     }
 }
