@@ -55,24 +55,35 @@ class FarmerController extends BaseController
     public function editProduct($id)
 {
     $productModel = new ProductModel();
-    $image = $this->request->getFile('image');
-        $imageName = null;
 
-        if ($image && $image->isValid() && !$image->hasMoved()) {
-
-            $imageName = $image->getRandomName();
-
-            $image->move(ROOTPATH . 'public/uploads/products', $imageName);
-        }
+    $product = $productModel->find($id);
 
     $data = [
         'name' => $this->request->getPost('name'),
         'category' => $this->request->getPost('category'),
         'price' => $this->request->getPost('price'),
         'stock_quantity' => $this->request->getPost('stock_quantity'),
-        'description' => $this->request->getPost('description'),
-        'image' => $imageName
+        'description' => $this->request->getPost('description')
     ];
+
+    $image = $this->request->getFile('image');
+
+    if ($image && $image->isValid() && !$image->hasMoved()) {
+
+        $imageName = $image->getRandomName();
+
+        $image->move(ROOTPATH . 'public/uploads/products', $imageName);
+
+        // delete old image
+        if (!empty($product['image'])) {
+            $oldPath = ROOTPATH . 'public/uploads/products/' . $product['image'];
+            if (file_exists($oldPath)) {
+                unlink($oldPath);
+            }
+        }
+
+        $data['image'] = $imageName;
+    }
 
     $productModel->update($id, $data);
 
