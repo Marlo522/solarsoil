@@ -64,7 +64,7 @@ class FarmerController extends BaseController
 
             $image->move(ROOTPATH . 'public/uploads/products', $imageName);
         }
-        
+
     $data = [
         'name' => $this->request->getPost('name'),
         'category' => $this->request->getPost('category'),
@@ -79,7 +79,28 @@ class FarmerController extends BaseController
     return redirect()->to(base_url('farmer/dashboard'));
 }
 
+public function deleteProduct($id)
+{
+    $productModel = new ProductModel();
 
+    $product = $productModel->find($id);
+
+    if ($product) {
+
+        // delete image if exists
+        if (!empty($product['image'])) {
+            $imagePath = FCPATH . 'uploads/products/' . $product['image'];
+
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
+
+        $productModel->delete($id);
+    }
+
+    return redirect()->to(base_url('farmer/dashboard'));
+}
 
 
 }

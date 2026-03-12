@@ -186,7 +186,7 @@ $stats = $stats ?? [
                 <p class="text-sm text-gray-500 mb-6">Are you sure you want to delete <span class="font-medium text-gray-700" x-text="deleteProduct.name"></span>? This action cannot be undone.</p>
                 <div class="flex gap-3">
                     <button type="button" @click="showDeleteModal = false" class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 border border-gray-200 hover:bg-gray-50 rounded-lg transition">Cancel</button>
-                    <form method="POST">
+                    <form :action="'<?= base_url('farmer/products/delete/') ?>' + deleteProduct.product_id" method="POST">
                         <input type="hidden" name="product_id" :value="deleteProduct.product_id">
                         <button type="submit" class="w-full px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition">Delete</button>
                     </form>
