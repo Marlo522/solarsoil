@@ -34,6 +34,7 @@ $routes->group('farmer', ['filter' => 'auth:seller'], static function ($routes) 
     $routes->get('orders', 'PageController::farmerDashboard');
     $routes->get('profile', 'PageController::farmerProfile');
     $routes->post('products/add', 'FarmerController::addProduct');
+    $routes->post('products/edit/(:num)', 'FarmerController::editProduct/$1');
 });
 
 // Admin dashboard

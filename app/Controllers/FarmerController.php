@@ -6,6 +6,23 @@ use App\Models\ProductModel;
 
 class FarmerController extends BaseController
 {
+
+    public function index()
+        {
+         
+
+            $productModel = model('ProductModel');
+            $farmerProducts = $productModel->where('user_id', session()->get('user_id'))->findAll();
+            $totalProducts = count($farmerProducts);
+            $data = [
+                'title' => 'Farmer Dashboard - SolarSoil',
+                'farmerProducts' => $farmerProducts,
+                'totalProducts' => $totalProducts
+            ];
+
+            return view('dashboard/farmer_dashboard', $data);
+        }
+
     public function addProduct()
     {
         $productModel = new ProductModel();
@@ -35,20 +52,24 @@ class FarmerController extends BaseController
         return redirect()->to(base_url('farmer/dashboard'));
     }
 
+    public function editProduct($id)
+{
+    $productModel = new ProductModel();
 
-        public function index()
-        {
-         
+    $data = [
+        'name' => $this->request->getPost('name'),
+        'category' => $this->request->getPost('category'),
+        'price' => $this->request->getPost('price'),
+        'stock_quantity' => $this->request->getPost('stock_quantity'),
+        'description' => $this->request->getPost('description')
+    ];
 
-            $productModel = model('ProductModel');
-            $farmerProducts = $productModel->where('user_id', session()->get('user_id'))->findAll();
-            $totalProducts = count($farmerProducts);
-            $data = [
-                'title' => 'Farmer Dashboard - SolarSoil',
-                'farmerProducts' => $farmerProducts,
-                'totalProducts' => $totalProducts
-            ];
+    $productModel->update($id, $data);
 
-            return view('dashboard/farmer_dashboard', $data);
-        }
+    return redirect()->to(base_url('farmer/dashboard'));
+}
+
+
+
+
 }
