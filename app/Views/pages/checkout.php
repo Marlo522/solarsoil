@@ -3,11 +3,7 @@
 <?= $this->section('content') ?>
 
 <?php
-$cartItems = $cartItems ?? [
-    ['product_name' => 'Fresh Tomatoes', 'price' => 80.00, 'quantity' => 2, 'subtotal' => 160.00],
-    ['product_name' => 'Mangoes', 'price' => 120.00, 'quantity' => 1, 'subtotal' => 120.00],
-    ['product_name' => 'Carrots', 'price' => 60.00, 'quantity' => 3, 'subtotal' => 180.00],
-];
+$cartItems = $cartItems ?? [];
 $subtotal = array_sum(array_column($cartItems, 'subtotal'));
 $shipping = 50.00;
 $discount = 0;
@@ -44,7 +40,7 @@ $total = $subtotal + $shipping - $discount;
 
     <h1 class="text-2xl font-bold text-gray-900 mb-8">Checkout</h1>
 
-    <form action="<?= base_url('checkout') ?>" method="POST">
+    <form action="<?= base_url('checkout/process') ?>" method="POST" x-data="{ payment: 'cod', shippingChoice: 'standard', subtotal: <?= empty($subtotal) ? 0 : $subtotal ?>, discount: <?= empty($discount) ? 0 : $discount ?>, get shippingCost() { return this.shippingChoice === 'express' ? 100 : 50; }, get total() { return this.subtotal + this.shippingCost - this.discount; } }">
         <?= csrf_field() ?>
         <div class="grid lg:grid-cols-3 gap-8">
             <!-- Left: Forms -->
@@ -83,8 +79,34 @@ $total = $subtotal + $shipping - $discount;
                     </div>
                 </div>
 
+                <!-- Shipping Method -->
+                <div class="bg-white rounded-xl border border-gray-100 p-6">
+                    <h2 class="font-semibold text-gray-900 mb-5 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 013 0m4.5 0a1.5 1.5 0 013 0m-7.5 0h7.5M8.25 18.75H6a2.25 2.25 0 01-2.25-2.25V9a2.25 2.25 0 012.25-2.25h1.5m4.5 0h5.25a2.25 2.25 0 012.25 2.25v6a2.25 2.25 0 01-2.25 2.25h-1.5m-6-9V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v3m7.5 0h7.5m-7.5 0H6"/></svg>
+                        Shipping Method
+                    </h2>
+                    <div class="grid sm:grid-cols-2 gap-3">
+                        <label :class="shippingChoice === 'standard' ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500' : 'border-gray-200 hover:border-gray-300'" class="relative flex flex-col gap-1 p-4 border rounded-xl cursor-pointer transition">
+                            <input type="radio" name="shipping_method" value="standard" x-model="shippingChoice" class="sr-only">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-900">Standard</span>
+                                <span class="text-sm font-semibold text-gray-900">&#8369;50.00</span>
+                            </div>
+                            <span class="text-xs text-gray-500">3-5 days delivery</span>
+                        </label>
+                        <label :class="shippingChoice === 'express' ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500' : 'border-gray-200 hover:border-gray-300'" class="relative flex flex-col gap-1 p-4 border rounded-xl cursor-pointer transition">
+                            <input type="radio" name="shipping_method" value="express" x-model="shippingChoice" class="sr-only">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm font-medium text-gray-900">Express</span>
+                                <span class="text-sm font-semibold text-gray-900">&#8369;100.00</span>
+                            </div>
+                            <span class="text-xs text-gray-500">1-2 days delivery</span>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Payment Method -->
-                <div class="bg-white rounded-xl border border-gray-100 p-6" x-data="{ payment: 'cod' }">
+                <div class="bg-white rounded-xl border border-gray-100 p-6">
                     <h2 class="font-semibold text-gray-900 mb-5 flex items-center gap-2">
                         <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>
                         Payment Method
@@ -146,7 +168,7 @@ $total = $subtotal + $shipping - $discount;
                         <?php foreach ($cartItems as $item): ?>
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 bg-gray-50 rounded-lg overflow-hidden shrink-0">
-                                <img src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=100&h=100&fit=crop" alt="<?= esc($item['product_name']) ?>" class="w-full h-full object-cover">
+                                <img src="<?= !empty($item['product_image']) ? base_url('uploads/products/' . esc($item['product_image'])) : 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=100&h=100&fit=crop' ?>" alt="<?= esc($item['product_name']) ?>" class="w-full h-full object-cover">
                             </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 truncate"><?= esc($item['product_name']) ?></p>
@@ -161,7 +183,7 @@ $total = $subtotal + $shipping - $discount;
                 <?= view('components/order_summary', ['summary' => ['subtotal' => $subtotal, 'shipping' => $shipping, 'discount' => $discount, 'total' => $total]]) ?>
 
                 <button type="submit" class="w-full px-6 py-3.5 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition shadow-sm text-sm">
-                    Confirm Order
+                    Proceed to Confirmation
                 </button>
 
                 <div class="flex items-center justify-center gap-2 text-xs text-gray-400">

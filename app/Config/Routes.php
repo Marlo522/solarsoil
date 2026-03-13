@@ -29,6 +29,9 @@ $routes->group('', ['filter' => 'auth:consumer'], static function ($routes) {
     $routes->post('cart/update', 'CartController::update');
     $routes->post('cart/remove', 'CartController::remove');
     $routes->get('checkout', 'PageController::checkout');
+    $routes->post('checkout/process', 'PageController::processCheckout');
+    $routes->get('confirmation', 'PageController::confirmation');
+    $routes->post('order/place', 'PageController::placeOrder');
     $routes->get('profile', 'PageController::profile');
 });
 

@@ -17,7 +17,7 @@ class OrderModel extends Model
         'status',
         'created_at',
         'isCompleted',
-        'total_amount'
+        'total'
     ];
 
     protected $useTimestamps = false;
