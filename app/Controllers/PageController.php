@@ -11,12 +11,39 @@ class PageController extends BaseController
 
     public function products(): string
     {
-        return view('pages/products', ['pageTitle' => 'Products']);
+        $productModel = new \App\Models\ProductModel();
+
+        $category = $this->request->getGet('category');
+
+        if ($category && $category !== 'All') {
+            $productModel->where('category', $category);
+        }
+
+        $products = $productModel->where('isDeleted', 0)->findAll();
+
+        return view('pages/products', [
+            'pageTitle' => 'Products',
+            'products' => $products,
+            'selectedCategory' => $category ?? 'All'
+        ]);
     }
 
     public function productDetail(int $id): string
     {
-        return view('pages/product_detail', ['pageTitle' => 'Product Detail', 'productId' => $id]);
+        $productModel = new \App\Models\ProductModel();
+        
+        $product = $productModel->where('product_id', $id)
+                                ->where('isDeleted', 0)
+                                ->first();
+
+        if (!$product) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Product not found.');
+        }
+
+        return view('pages/product_detail', [
+            'pageTitle' => $product['name'] . ' - Product Detail',
+            'product' => $product
+        ]);
     }
 
     public function about(): string
@@ -36,7 +63,35 @@ class PageController extends BaseController
 
     public function cart(): string
     {
-        return view('pages/cart', ['pageTitle' => 'Cart']);
+        $userId = session()->get('user_id');
+        $cartItems = [];
+
+        if ($userId) {
+            $cartModel = new \App\Models\CartModel();
+            $cartItemModel = new \App\Models\CartItemModel();
+
+            $cart = $cartModel->where('user_id', $userId)->first();
+
+            if ($cart) {
+                // Fetch active cart items and join with products
+                $cartItems = $cartItemModel
+                    ->select('cart_items.*, products.name as product_name, products.image as product_image, products.price')
+                    ->join('products', 'products.product_id = cart_items.product_id')
+                    ->where('cart_items.cart_id', $cart['cart_id'])
+                    ->where('cart_items.inCart', 1)
+                    ->findAll();
+
+                // Add subtotal for each item
+                foreach ($cartItems as &$item) {
+                    $item['subtotal'] = $item['quantity'] * $item['price'];
+                }
+            }
+        }
+
+        return view('pages/cart', [
+            'pageTitle' => 'Cart',
+            'cartItems' => $cartItems
+        ]);
     }
 
     public function checkout(): string

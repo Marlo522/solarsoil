@@ -75,18 +75,7 @@
 
             <!-- Products Grid -->
             <?php
-            $allProducts = $products ?? [
-                ['product_id' => 1, 'image' => 'tomato.jpg', 'name' => 'Fresh Tomatoes', 'price' => 80.00, 'stock_quantity' => 100, 'description' => 'Organic red tomatoes, farm fresh', 'category' => 'Vegetables'],
-                ['product_id' => 2, 'image' => 'carrot.jpg', 'name' => 'Carrots', 'price' => 60.00, 'stock_quantity' => 150, 'description' => 'Sweet and crunchy carrots', 'category' => 'Vegetables'],
-                ['product_id' => 3, 'image' => 'banana.jpg', 'name' => 'Bananas', 'price' => 50.00, 'stock_quantity' => 200, 'description' => 'Ripe Cavendish bananas', 'category' => 'Fruits'],
-                ['product_id' => 4, 'image' => 'lettuce.jpg', 'name' => 'Lettuce', 'price' => 40.00, 'stock_quantity' => 80, 'description' => 'Fresh green lettuce', 'category' => 'Vegetables'],
-                ['product_id' => 5, 'image' => 'mango.jpg', 'name' => 'Mangoes', 'price' => 120.00, 'stock_quantity' => 60, 'description' => 'Sweet Philippine mangoes', 'category' => 'Fruits'],
-                ['product_id' => 6, 'image' => 'potato.jpg', 'name' => 'Potatoes', 'price' => 70.00, 'stock_quantity' => 120, 'description' => 'Fresh potatoes for cooking', 'category' => 'Vegetables'],
-                ['product_id' => 7, 'image' => 'apple.jpg', 'name' => 'Apples', 'price' => 150.00, 'stock_quantity' => 90, 'description' => 'Crisp red apples', 'category' => 'Fruits'],
-                ['product_id' => 8, 'image' => 'cucumber.jpg', 'name' => 'Cucumber', 'price' => 45.00, 'stock_quantity' => 100, 'description' => 'Fresh green cucumber', 'category' => 'Vegetables'],
-                ['product_id' => 9, 'image' => 'orange.jpg', 'name' => 'Oranges', 'price' => 100.00, 'stock_quantity' => 110, 'description' => 'Juicy sweet oranges', 'category' => 'Fruits'],
-                ['product_id' => 10, 'image' => 'eggplant.jpg', 'name' => 'Eggplant', 'price' => 55.00, 'stock_quantity' => 70, 'description' => 'Fresh purple eggplant', 'category' => 'Vegetables'],
-            ];
+            $allProducts = $products ?? [];
             ?>
 
             <?php if (empty($allProducts)): ?>

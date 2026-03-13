@@ -28,7 +28,10 @@
 
         <div class="flex gap-2">
             <a href="<?= base_url('products/' . $product['product_id']) ?>" class="flex-1 text-center px-3 py-2 text-xs font-medium text-primary-700 border border-primary-200 hover:bg-primary-50 rounded-lg transition">View Details</a>
-            <button class="flex-1 px-3 py-2 text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition <?= $product['stock_quantity'] <= 0 ? 'opacity-50 cursor-not-allowed' : '' ?>" <?= $product['stock_quantity'] <= 0 ? 'disabled' : '' ?>>Add to Cart</button>
+            <form action="<?= base_url('cart/add') ?>" method="POST" class="flex-1">
+                <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+                <button type="submit" class="w-full px-3 py-2 text-xs font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition <?= $product['stock_quantity'] <= 0 ? 'opacity-50 cursor-not-allowed' : '' ?>" <?= $product['stock_quantity'] <= 0 ? 'disabled' : '' ?>>Add to Cart</button>
+            </form>
         </div>
     </div>
 </div>

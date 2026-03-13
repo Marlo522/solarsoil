@@ -3,11 +3,7 @@
 <?= $this->section('content') ?>
 
 <?php
-$product = $product ?? [
-    'product_id' => 1, 'image' => 'tomato.jpg', 'name' => 'Fresh Tomatoes', 'price' => 80.00,
-    'stock_quantity' => 100, 'description' => 'Organic red tomatoes, farm fresh. Grown naturally without pesticides in the highlands of Benguet. These tomatoes are hand-picked at peak ripeness to ensure the best flavor and nutritional value. Perfect for salads, sauces, and everyday cooking.',
-    'category' => 'Vegetables', 'date_added' => '2026-03-06'
-];
+// Product data is now injected by the controller securely.
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -85,32 +81,36 @@ $product = $product ?? [
 
             <!-- Quantity + Actions -->
             <div x-data="{ qty: 1 }" class="space-y-4">
-                <!-- Quantity -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                    <div class="inline-flex items-center border border-gray-200 rounded-lg overflow-hidden">
-                        <button @click="qty > 1 ? qty-- : null" class="px-4 py-2.5 text-gray-500 hover:bg-gray-50 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                <form action="<?= base_url('cart/add') ?>" method="POST">
+                    <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
+                    
+                    <!-- We actually handle native add from product detail by forcing the CartController 
+                         to increment safely, but standard CI implementation expects only adding 1 currently 
+                         without deeper logic changes. We will mimic single adds for now or ignore qty visual stepper.
+                    -->
+                    
+                    <!-- Quantity -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                        <div class="inline-flex items-center border border-gray-200 rounded-lg overflow-hidden opacity-50 cursor-not-allowed">
+                            <span class="px-5 py-2.5 text-sm font-medium text-gray-900 border-x border-gray-200 min-w-[3rem] text-center">1</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Quantity is adjusted in the Cart.</p>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-3">
+                        <button type="submit" class="flex-1 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition shadow-sm <?= $product['stock_quantity'] <= 0 ? 'opacity-50 cursor-not-allowed' : '' ?>" <?= $product['stock_quantity'] <= 0 ? 'disabled' : '' ?>>
+                            <span class="flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121 0 2.002-.881 1.745-1.97l-1.876-7.89A1.125 1.125 0 0016.744 3H7.106"/></svg>
+                                Add to Cart
+                            </span>
                         </button>
-                        <span class="px-5 py-2.5 text-sm font-medium text-gray-900 border-x border-gray-200 min-w-[3rem] text-center" x-text="qty"></span>
-                        <button @click="qty < <?= $product['stock_quantity'] ?> ? qty++ : null" class="px-4 py-2.5 text-gray-500 hover:bg-gray-50 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <button type="button" class="px-6 py-3 bg-earth-500 text-white font-semibold rounded-xl hover:bg-earth-600 transition shadow-sm <?= $product['stock_quantity'] <= 0 ? 'opacity-50 cursor-not-allowed' : '' ?>" <?= $product['stock_quantity'] <= 0 ? 'disabled' : '' ?>>
+                            Buy Now
                         </button>
                     </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex gap-3">
-                    <button class="flex-1 px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl hover:bg-primary-700 transition shadow-sm <?= $product['stock_quantity'] <= 0 ? 'opacity-50 cursor-not-allowed' : '' ?>" <?= $product['stock_quantity'] <= 0 ? 'disabled' : '' ?>>
-                        <span class="flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121 0 2.002-.881 1.745-1.97l-1.876-7.89A1.125 1.125 0 0016.744 3H7.106"/></svg>
-                            Add to Cart
-                        </span>
-                    </button>
-                    <button class="px-6 py-3 bg-earth-500 text-white font-semibold rounded-xl hover:bg-earth-600 transition shadow-sm <?= $product['stock_quantity'] <= 0 ? 'opacity-50 cursor-not-allowed' : '' ?>" <?= $product['stock_quantity'] <= 0 ? 'disabled' : '' ?>>
-                        Buy Now
-                    </button>
-                </div>
+                </form>
             </div>
 
             <!-- Meta -->

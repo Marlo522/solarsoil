@@ -41,5 +41,27 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
+
+        // Share cart count globally for consumers
+        $cartCount = 0;
+        if (session()->get('role') === 'consumer' && session()->get('user_id')) {
+            $cartModel = new \App\Models\CartModel();
+            $cartItemModel = new \App\Models\CartItemModel();
+            
+            $cart = $cartModel->where('user_id', session()->get('user_id'))->first();
+            if ($cart) {
+                // Get the total quantity across all active cart items
+                $result = $cartItemModel->selectSum('quantity')
+                                        ->where('cart_id', $cart['cart_id'])
+                                        ->where('inCart', 1)
+                                        ->first();
+                $cartCount = $result['quantity'] ?? 0;
+            }
+        }
+        
+        // Make $cartCount available to all views
+        // We use the View service directly to share the data globally
+        $renderer = \Config\Services::renderer();
+        $renderer->setVar('cartCount', $cartCount);
     }
 }

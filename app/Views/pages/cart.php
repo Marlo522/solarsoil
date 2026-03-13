@@ -3,11 +3,7 @@
 <?= $this->section('content') ?>
 
 <?php
-$cartItems = $cartItems ?? [
-    ['cartitem_id' => 1, 'product_name' => 'Fresh Tomatoes', 'product_image' => 'tomato.jpg', 'price' => 80.00, 'quantity' => 2, 'subtotal' => 160.00],
-    ['cartitem_id' => 2, 'product_name' => 'Mangoes', 'product_image' => 'mango.jpg', 'price' => 120.00, 'quantity' => 1, 'subtotal' => 120.00],
-    ['cartitem_id' => 3, 'product_name' => 'Carrots', 'product_image' => 'carrot.jpg', 'price' => 60.00, 'quantity' => 3, 'subtotal' => 180.00],
-];
+$cartItems = $cartItems ?? [];
 $subtotal = array_sum(array_column($cartItems, 'subtotal'));
 $shipping = 50.00;
 $discount = 0;

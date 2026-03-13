@@ -23,9 +23,14 @@ $routes->group('', ['filter' => 'guest'], static function ($routes) {
 $routes->get('logout', 'Auth::logout');
 
 // Authenticated user pages
-$routes->get('cart', 'PageController::cart', ['filter' => 'auth:consumer']);
-$routes->get('checkout', 'PageController::checkout', ['filter' => 'auth:consumer']);
-$routes->get('profile', 'PageController::profile', ['filter' => 'auth:consumer']);
+$routes->group('', ['filter' => 'auth:consumer'], static function ($routes) {
+    $routes->get('cart', 'PageController::cart');
+    $routes->post('cart/add', 'CartController::add');
+    $routes->post('cart/update', 'CartController::update');
+    $routes->post('cart/remove', 'CartController::remove');
+    $routes->get('checkout', 'PageController::checkout');
+    $routes->get('profile', 'PageController::profile');
+});
 
 // Farmer dashboard
 $routes->group('farmer', ['filter' => 'auth:seller'], static function ($routes) {

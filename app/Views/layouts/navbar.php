@@ -21,7 +21,9 @@
             <div class="hidden md:flex items-center gap-3">
                 <a href="<?= base_url('cart') ?>" class="relative p-2 text-gray-500 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121 0 2.002-.881 1.745-1.97l-1.876-7.89A1.125 1.125 0 0016.744 3H7.106l-.383-1.437A1.125 1.125 0 005.636 .728H2.25M6.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"/></svg>
-                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs font-bold rounded-full flex items-center justify-center">0</span>
+                    <?php if (isset($cartCount) && $cartCount > 0): ?>
+                        <span class="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs font-bold rounded-full flex items-center justify-center"><?= esc($cartCount) ?></span>
+                    <?php endif; ?>
                 </a>
                 <?php if (session()->get('user_id')): ?>
                     <a href="<?= base_url('profile') ?>" class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition">
