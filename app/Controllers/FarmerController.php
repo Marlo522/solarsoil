@@ -424,19 +424,46 @@ public function updateProfile()
     $userId = session()->get('user_id');
 
     $data = [
-        'first_name' => $this->request->getPost('first_name'),
-        'last_name'  => $this->request->getPost('last_name'),
-        'email'      => $this->request->getPost('email'),
-        'phone'      => $this->request->getPost('phone')
+        'first_name'     => $this->request->getPost('first_name'),
+        'middle_name'    => $this->request->getPost('middle_name'),
+        'last_name'      => $this->request->getPost('last_name'),
+        'suffix'         => $this->request->getPost('suffix'),
+        'contact_number' => $this->request->getPost('contact_number'),
+        'address'        => $this->request->getPost('address'),
     ];
 
     $this->userModel->update($userId, $data);
 
-    return redirect()->back()->with('success', 'Profile updated');
+    return redirect()->to(base_url('farmer/profile'));
 }
 
 
+public function updatePassword()
+{
+    $userId = session()->get('user_id');
 
+    $currentPassword = $this->request->getPost('current_password');
+    $newPassword     = $this->request->getPost('new_password');
+    $confirmPassword = $this->request->getPost('confirm_password');
+
+    $user = $this->userModel->find($userId);
+
+    // check current password
+    if (!password_verify($currentPassword, $user['password'])) {
+        return redirect()->back()->with('error', 'Current password is incorrect.');
+    }
+
+    // check password confirmation
+    if ($newPassword !== $confirmPassword) {
+        return redirect()->back()->with('error', 'Passwords do not match.');
+    }
+
+    $this->userModel->update($userId, [
+        'password' => password_hash($newPassword, PASSWORD_DEFAULT)
+    ]);
+
+    return redirect()->to(base_url('farmer/profile'))->with('success', 'Password updated successfully.');
+}
 
 
 

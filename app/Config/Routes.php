@@ -46,6 +46,8 @@ $routes->group('farmer', ['filter' => 'auth:seller'], static function ($routes) 
     $routes->post('products/add', 'FarmerController::addProduct');
     $routes->post('products/edit/(:num)', 'FarmerController::editProduct/$1');
     $routes->post('products/delete/(:num)', 'FarmerController::deleteProduct/$1');
+    $routes->post('profile/update', 'FarmerController::updateProfile');
+$routes->post('password/update', 'FarmerController::updatePassword');
 });
 
 // Admin dashboard
