@@ -161,63 +161,97 @@ class FarmerController extends BaseController
     }
 
     public function orders()
-    {
-        $userId = session()->get('user_id');
+{
+    $userId = session()->get('user_id');
 
-        // Get all products belonging to this farmer
-        $farmerProductIds = array_column(
-            $this->productModel->where('user_id', $userId)->findAll(),
-            'product_id'
-        );
+    $search = $this->request->getGet('search');
+    $status = $this->request->getGet('status');
 
-        $orders = [];
+    // Get all products belonging to this farmer
+    $farmerProductIds = array_column(
+        $this->productModel->where('user_id', $userId)->findAll(),
+        'product_id'
+    );
 
-        if (!empty($farmerProductIds)) {
-            // Find cart items that contain this farmer's products and have an order_id
-            $cartItems = $this->cartItemModel
-                ->whereIn('product_id', $farmerProductIds)
-                ->where('order_id IS NOT NULL')
-                ->findAll();
+    $orders = [];
 
-            // Group by order_id
-            $orderIds = array_unique(array_column($cartItems, 'order_id'));
+    if (!empty($farmerProductIds)) {
 
-            foreach ($orderIds as $orderId) {
-                $order = $this->orderModel->where('order_id', $orderId)->first();
-                if (!$order) continue;
+        $cartItems = $this->cartItemModel
+            ->whereIn('product_id', $farmerProductIds)
+            ->where('order_id IS NOT NULL')
+            ->findAll();
 
-                $consumer = $this->userModel->where('user_id', $order['user_id'])->first();
-                $order['consumer_name'] = $consumer
-                    ? $consumer['first_name'] . ' ' . $consumer['last_name']
-                    : 'Unknown';
+        $orderIds = array_unique(array_column($cartItems, 'order_id'));
 
-                // Calculate total for this farmer's items only
-                $orderCartItems = array_filter($cartItems, fn($ci) => $ci['order_id'] == $orderId);
-                $subtotal = 0;
-                $productNames = [];
-                foreach ($orderCartItems as $ci) {
-                    $product = $this->productModel->where('product_id', $ci['product_id'])->first();
-                    if ($product) {
-                        $subtotal += $product['price'] * $ci['quantity'];
-                        $productNames[] = $product['name'];
-                    }
+        foreach ($orderIds as $orderId) {
+
+            $order = $this->orderModel->where('order_id', $orderId)->first();
+            if (!$order) continue;
+
+            $consumer = $this->userModel->where('user_id', $order['user_id'])->first();
+
+            $order['consumer_name'] = $consumer
+                ? $consumer['first_name'] . ' ' . $consumer['last_name']
+                : 'Unknown';
+
+            $orderCartItems = array_filter($cartItems, fn($ci) => $ci['order_id'] == $orderId);
+
+            $subtotal = 0;
+            $productNames = [];
+
+            foreach ($orderCartItems as $ci) {
+
+                $product = $this->productModel
+                    ->where('product_id', $ci['product_id'])
+                    ->first();
+
+                if ($product) {
+                    $subtotal += $product['price'] * $ci['quantity'];
+                    $productNames[] = $product['name'];
                 }
-
-                $order['total_amount'] = $subtotal;
-                $order['products'] = implode(', ', $productNames);
-
-                $orders[] = $order;
             }
 
-            // Sort newest first
-            usort($orders, fn($a, $b) => ($b['order_id'] ?? 0) - ($a['order_id'] ?? 0));
+            $order['total_amount'] = $subtotal;
+            $order['products'] = implode(', ', $productNames);
+
+            $orders[] = $order;
         }
 
-        return view('farmer/orders', [
-            'title'  => 'My Orders - SolarSoil',
-            'orders' => $orders,
-        ]);
+        // SORT newest first
+        usort($orders, fn($a, $b) => ($b['order_id'] ?? 0) - ($a['order_id'] ?? 0));
     }
+
+    /*
+    |--------------------------------
+    | SEARCH FILTER
+    |--------------------------------
+    */
+    if (!empty($search)) {
+        $orders = array_filter($orders, function ($o) use ($search) {
+
+            return
+                stripos($o['consumer_name'] ?? '', $search) !== false ||
+                stripos((string)$o['order_id'], $search) !== false;
+        });
+    }
+
+    /*
+    |--------------------------------
+    | STATUS FILTER
+    |--------------------------------
+    */
+    if (!empty($status) && $status !== 'all') {
+        $orders = array_filter($orders, function ($o) use ($status) {
+            return ($o['status'] ?? '') === $status;
+        });
+    }
+
+    return view('farmer/orders', [
+        'title'  => 'My Orders - SolarSoil',
+        'orders' => $orders,
+    ]);
+}
 
     public function orderDetail(int $id)
     {
