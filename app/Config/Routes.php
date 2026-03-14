@@ -42,7 +42,7 @@ $routes->group('farmer', ['filter' => 'auth:seller'], static function ($routes) 
     $routes->get('products/(:num)', 'FarmerController::productDetail/$1');
     $routes->get('orders', 'FarmerController::orders');
     $routes->get('orders/(:num)', 'FarmerController::orderDetail/$1');
-    $routes->get('profile', 'PageController::farmerProfile');
+    $routes->get('profile', 'FarmerController::profile');
     $routes->post('products/add', 'FarmerController::addProduct');
     $routes->post('products/edit/(:num)', 'FarmerController::editProduct/$1');
     $routes->post('products/delete/(:num)', 'FarmerController::deleteProduct/$1');

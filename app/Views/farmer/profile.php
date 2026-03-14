@@ -22,12 +22,12 @@
 <?= $this->section('content') ?>
 
 <?php
-$user = $user ?? [
-    'user_id' => 2, 'first_name' => 'Maria', 'middle_name' => '', 'last_name' => 'Reyes',
-    'suffix' => '', 'email' => 'maria@email.com', 'contact_number' => '09111111111',
-    'address' => 'Manila', 'role' => 'seller', 'date_joined' => '2026-03-06 10:48:45'
-];
-$fullName = trim($user['first_name'] . ' ' . ($user['middle_name'] ? $user['middle_name'] . ' ' : '') . $user['last_name'] . ($user['suffix'] ? ' ' . $user['suffix'] : ''));
+$fullName = trim(
+    $user['first_name'] . ' ' .
+    ($user['middle_name'] ? $user['middle_name'] . ' ' : '') .
+    $user['last_name'] .
+    ($user['suffix'] ? ' ' . $user['suffix'] : '')
+);
 ?>
 
 <div x-data="{ tab: 'profile' }">

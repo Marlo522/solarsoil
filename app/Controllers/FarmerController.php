@@ -405,5 +405,40 @@ public function deleteProduct($id)
     return redirect()->to(base_url('farmer/dashboard'));
 }
 
+public function profile()
+{
+    $userId = session()->get('user_id');
+
+    $user = $this->userModel
+        ->where('user_id', $userId)
+        ->first();
+
+    return view('farmer/profile', [
+        'title' => 'My Profile - SolarSoil',
+        'user' => $user
+    ]);
+}
+
+public function updateProfile()
+{
+    $userId = session()->get('user_id');
+
+    $data = [
+        'first_name' => $this->request->getPost('first_name'),
+        'last_name'  => $this->request->getPost('last_name'),
+        'email'      => $this->request->getPost('email'),
+        'phone'      => $this->request->getPost('phone')
+    ];
+
+    $this->userModel->update($userId, $data);
+
+    return redirect()->back()->with('success', 'Profile updated');
+}
+
+
+
+
+
+
 
 }
