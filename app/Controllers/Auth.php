@@ -34,7 +34,7 @@ class Auth extends BaseController
                 session()->set('isLoggedIn', true);
                 session()->set('role', $user['role']);
                 session()->set('user_id', $user['user_id']);
-
+                
                 return $this->redirect();
             }else{
                 session()->setFlashdata('error', 'Incorrect password');
@@ -76,8 +76,8 @@ class Auth extends BaseController
             session()->setFlashdata('error', $e->getMessage());
             return redirect()->back()->withInput();
         }
-
-        return redirect()->to(base_url('/login'));
+        session()->setFlashdata('success', 'Registration successful');
+        return redirect()->to(base_url('/login'))->with('success', 'Registration successful');
     }
     public function logout()
     {
