@@ -423,18 +423,28 @@ public function updateProfile()
 {
     $userId = session()->get('user_id');
 
+    $rules = [
+        'first_name' => 'required|min_length[2]',
+        'last_name' => 'required|min_length[2]',
+        'contact_number' => 'required',
+        'address' => 'required'
+    ];
+
+    if (!$this->validate($rules)) {
+        return redirect()->back()->withInput()->with('error', 'Please fill in all required fields.');
+    }
+
     $data = [
-        'first_name'     => $this->request->getPost('first_name'),
-        'middle_name'    => $this->request->getPost('middle_name'),
-        'last_name'      => $this->request->getPost('last_name'),
-        'suffix'         => $this->request->getPost('suffix'),
+        'first_name' => $this->request->getPost('first_name'),
+        'middle_name' => $this->request->getPost('middle_name'),
+        'last_name' => $this->request->getPost('last_name'),
         'contact_number' => $this->request->getPost('contact_number'),
-        'address'        => $this->request->getPost('address'),
+        'address' => $this->request->getPost('address')
     ];
 
     $this->userModel->update($userId, $data);
 
-    return redirect()->to(base_url('farmer/profile'));
+    return redirect()->to(base_url('farmer/profile'))->with('success', 'Profile updated successfully.');
 }
 
 
@@ -442,24 +452,24 @@ public function updatePassword()
 {
     $userId = session()->get('user_id');
 
-    $currentPassword = $this->request->getPost('current_password');
-    $newPassword     = $this->request->getPost('new_password');
-    $confirmPassword = $this->request->getPost('confirm_password');
+    $rules = [
+        'current_password' => 'required',
+        'new_password' => 'required|min_length[6]',
+        'confirm_password' => 'required|matches[new_password]'
+    ];
+
+    if (!$this->validate($rules)) {
+        return redirect()->back()->with('error', 'Please complete the password fields correctly.');
+    }
 
     $user = $this->userModel->find($userId);
 
-    // check current password
-    if (!password_verify($currentPassword, $user['password'])) {
+    if (!password_verify($this->request->getPost('current_password'), $user['password'])) {
         return redirect()->back()->with('error', 'Current password is incorrect.');
     }
 
-    // check password confirmation
-    if ($newPassword !== $confirmPassword) {
-        return redirect()->back()->with('error', 'Passwords do not match.');
-    }
-
     $this->userModel->update($userId, [
-        'password' => password_hash($newPassword, PASSWORD_DEFAULT)
+        'password' => password_hash($this->request->getPost('new_password'), PASSWORD_DEFAULT)
     ]);
 
     return redirect()->to(base_url('farmer/profile'))->with('success', 'Password updated successfully.');

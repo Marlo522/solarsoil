@@ -188,15 +188,15 @@ Edit Profile
 
 <form action="<?= base_url('farmer/profile/update') ?>" method="POST" class="p-6 space-y-4">
 
-<input type="text" placeholder="First Name" name="first_name" value="<?= esc($user['first_name']) ?>" class="w-full px-4 py-2 border rounded-lg">
+<input required type="text" placeholder="First Name" name="first_name" value="<?= esc($user['first_name']) ?>" class="w-full px-4 py-2 border rounded-lg">
 
 <input type="text" placeholder="Middle Name" name="middle_name" value="<?= esc($user['middle_name']) ?>" class="w-full px-4 py-2 border rounded-lg">
 
-<input type="text" placeholder="Last Name" name="last_name" value="<?= esc($user['last_name']) ?>" class="w-full px-4 py-2 border rounded-lg">
+<input required type="text" placeholder="Last Name" name="last_name" value="<?= esc($user['last_name']) ?>" class="w-full px-4 py-2 border rounded-lg">
 
-<input type="text" placeholder="Contact Number" name="contact_number" value="<?= esc($user['contact_number']) ?>" class="w-full px-4 py-2 border rounded-lg">
+<input required type="text" placeholder="Contact Number" name="contact_number" value="<?= esc($user['contact_number']) ?>" class="w-full px-4 py-2 border rounded-lg">
 
-<textarea placeholder="Address" name="address" class="w-full px-4 py-2 border rounded-lg"><?= esc($user['address']) ?></textarea>
+<textarea required placeholder="Address" name="address" class="w-full px-4 py-2 border rounded-lg"><?= esc($user['address']) ?></textarea>
 
 <div class="flex gap-3">
 <button type="button" @click="showEditProfile=false" class="flex-1 border rounded-lg py-2">Cancel</button>
