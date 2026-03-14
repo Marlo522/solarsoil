@@ -81,36 +81,55 @@ $products = $products ?? [];
 </div>
 
 <!-- Search and Filter -->
-<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+<form method="GET" action="<?= base_url('farmer/products') ?>" class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+
     <div class="relative w-full sm:w-64">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-        <input type="text" placeholder="Search product ID or name..."
-               class="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition" />
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+        </svg>
+
+        <input
+            type="text"
+            name="search"
+            value="<?= esc($_GET['search'] ?? '') ?>"
+            placeholder="Search product ID or name..."
+            class="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+        />
     </div>
+
     <div class="flex items-center gap-3">
+
         <div class="flex items-center gap-2">
             <span class="text-sm text-gray-500">Category:</span>
-            <select class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
+            <select name="category" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
                 <option value="all">All</option>
-                <option value="vegetables">Vegetables</option>
-                <option value="fruits">Fruits</option>
-                <option value="herbs">Herbs</option>
-                <option value="grains">Grains</option>
-                <option value="dairy">Dairy</option>
-                <option value="organic">Organic</option>
+                <option value="Vegetables" <?= (($_GET['category'] ?? '') == 'Vegetables') ? 'selected' : '' ?>>Vegetables</option>
+                <option value="Fruits" <?= (($_GET['category'] ?? '') == 'Fruits') ? 'selected' : '' ?>>Fruits</option>
+                <option value="Herbs" <?= (($_GET['category'] ?? '') == 'Herbs') ? 'selected' : '' ?>>Herbs</option>
+                <option value="Grains" <?= (($_GET['category'] ?? '') == 'Grains') ? 'selected' : '' ?>>Grains</option>
+                <option value="Dairy" <?= (($_GET['category'] ?? '') == 'Dairy') ? 'selected' : '' ?>>Dairy</option>
+                <option value="Organic" <?= (($_GET['category'] ?? '') == 'Organic') ? 'selected' : '' ?>>Organic</option>
             </select>
         </div>
+
         <div class="flex items-center gap-2">
             <span class="text-sm text-gray-500">Status:</span>
-            <select class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
+            <select name="status" class="px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
                 <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="out_of_stock">Out of Stock</option>
+                <option value="active" <?= (($_GET['status'] ?? '') == 'active') ? 'selected' : '' ?>>Active</option>
+                <option value="inactive" <?= (($_GET['status'] ?? '') == 'inactive') ? 'selected' : '' ?>>Inactive</option>
+                <option value="out_of_stock" <?= (($_GET['status'] ?? '') == 'out_of_stock') ? 'selected' : '' ?>>Out of Stock</option>
             </select>
         </div>
+
+        <button type="submit"
+            class="px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition">
+            Apply
+        </button>
+
     </div>
-</div>
+
+</form>
 
 <!-- Table -->
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">

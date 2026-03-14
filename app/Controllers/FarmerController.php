@@ -97,24 +97,49 @@ class FarmerController extends BaseController
 }
 
     public function products()
-    {
-        $userId = session()->get('user_id');
+{
+    $userId = session()->get('user_id');
 
-        $products = $this->productModel
-            ->where('user_id', $userId)
-            ->orderBy('product_id', 'DESC')
-            ->findAll();
+    $search   = $this->request->getGet('search');
+    $category = $this->request->getGet('category');
+    $status   = $this->request->getGet('status');
 
-        // Add status based on stock
-        foreach ($products as &$product) {
-            $product['status'] = ($product['stock_quantity'] ?? 0) > 0 ? 'active' : 'out_of_stock';
-        }
+    $builder = $this->productModel
+        ->where('user_id', $userId);
 
-        return view('farmer/products', [
-            'title'    => 'My Products - SolarSoil',
-            'products' => $products,
-        ]);
+    // SEARCH
+    if (!empty($search)) {
+        $builder->groupStart()
+            ->like('name', $search)
+            ->orLike('product_id', $search)
+        ->groupEnd();
     }
+
+    // CATEGORY FILTER
+    if (!empty($category) && $category !== 'all') {
+        $builder->where('category', $category);
+    }
+
+    $products = $builder
+        ->orderBy('product_id', 'DESC')
+        ->findAll();
+
+    // STATUS FILTER (based on stock)
+    foreach ($products as &$product) {
+        $product['status'] = ($product['stock_quantity'] ?? 0) > 0 ? 'active' : 'out_of_stock';
+    }
+
+    if (!empty($status) && $status !== 'all') {
+        $products = array_filter($products, function ($p) use ($status) {
+            return $p['status'] === $status;
+        });
+    }
+
+    return view('farmer/products', [
+        'title'    => 'My Products - SolarSoil',
+        'products' => $products,
+    ]);
+}
 
     public function productDetail(int $id)
     {
