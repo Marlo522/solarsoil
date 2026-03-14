@@ -35,7 +35,10 @@ $fullName = trim(
 );
 ?>
 
-<div x-data="{ tab: 'profile', showEditProfile:false }">
+<div x-data="{
+    tab: new URLSearchParams(window.location.search).get('tab') || 'profile',
+    showEditProfile:false
+}">
 
 <!-- Tabs -->
 <div class="flex gap-1 bg-gray-100 rounded-lg p-1 w-fit mb-6">
@@ -117,6 +120,18 @@ Edit Profile
 
         <div>
             <h3 class="text-sm font-semibold text-gray-900 mb-4">Change Password</h3>
+
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg mb-4">
+                    <?= session()->getFlashdata('error') ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg mb-4">
+                    <?= session()->getFlashdata('success') ?>
+                </div>
+            <?php endif; ?>
 
             <form action="<?= base_url('farmer/password/update') ?>" method="POST" class="space-y-4 max-w-md">
 

@@ -452,27 +452,28 @@ public function updatePassword()
 {
     $userId = session()->get('user_id');
 
-    $rules = [
-        'current_password' => 'required',
-        'new_password' => 'required|min_length[6]',
-        'confirm_password' => 'required|matches[new_password]'
-    ];
-
-    if (!$this->validate($rules)) {
-        return redirect()->back()->with('error', 'Please complete the password fields correctly.');
-    }
+    $currentPassword = $this->request->getPost('current_password');
+    $newPassword     = $this->request->getPost('new_password');
+    $confirmPassword = $this->request->getPost('confirm_password');
 
     $user = $this->userModel->find($userId);
 
-    if (!password_verify($this->request->getPost('current_password'), $user['password'])) {
-        return redirect()->back()->with('error', 'Current password is incorrect.');
+    if (!password_verify($currentPassword, $user['password'])) {
+        return redirect()->to(base_url('farmer/profile?tab=settings'))
+            ->with('error', 'Current password is incorrect.');
+    }
+
+    if ($newPassword !== $confirmPassword) {
+        return redirect()->to(base_url('farmer/profile?tab=settings'))
+            ->with('error', 'New password and confirm password do not match.');
     }
 
     $this->userModel->update($userId, [
-        'password' => password_hash($this->request->getPost('new_password'), PASSWORD_DEFAULT)
+        'password' => password_hash($newPassword, PASSWORD_DEFAULT)
     ]);
 
-    return redirect()->to(base_url('farmer/profile'))->with('success', 'Password updated successfully.');
+    return redirect()->to(base_url('farmer/profile?tab=settings'))
+        ->with('success', 'Password updated successfully.');
 }
 
 
