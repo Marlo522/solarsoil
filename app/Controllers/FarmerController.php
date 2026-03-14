@@ -23,18 +23,78 @@ class FarmerController extends BaseController
     }
 
     public function index()
-    {
-        $farmerProducts = $this->productModel
-            ->where('user_id', session()->get('user_id'))
-            ->findAll();
-        $totalProducts = count($farmerProducts);
+{
+    $userId = session()->get('user_id');
 
-        return view('farmer/dashboard', [
-            'title'          => 'Farmer Dashboard - SolarSoil',
-            'farmerProducts' => $farmerProducts,
-            'totalProducts'  => $totalProducts,
-        ]);
+    // Farmer products
+    $farmerProducts = $this->productModel
+        ->where('user_id', $userId)
+        ->findAll();
+
+    $totalProducts = count($farmerProducts);
+
+    $farmerProductIds = array_column($farmerProducts, 'product_id');
+
+    $ordersToday = 0;
+    $pendingOrders = 0;
+
+    if (!empty($farmerProductIds)) {
+
+        $cartItems = $this->cartItemModel
+            ->whereIn('product_id', $farmerProductIds)
+            ->where('order_id IS NOT NULL')
+            ->findAll();
+
+        $orderIds = array_unique(array_column($cartItems, 'order_id'));
+
+        foreach ($orderIds as $orderId) {
+
+            $order = $this->orderModel
+                ->where('order_id', $orderId)
+                ->first();
+
+            if (!$order) continue;
+
+            // orders today
+            if (date('Y-m-d', strtotime($order['created_at'])) === date('Y-m-d')) {
+                $ordersToday++;
+            }
+
+            // pending orders
+            if (($order['status'] ?? '') === 'pending') {
+                $pendingOrders++;
+            }
+        }
     }
+
+    $stats = [
+        [
+            'label' => 'Orders Today',
+            'value' => $ordersToday,
+            'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z"/></svg>',
+            'color' => 'bg-blue-50 text-blue-600'
+        ],
+        [
+            'label' => 'Pending Orders',
+            'value' => $pendingOrders,
+            'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'color' => 'bg-amber-50 text-amber-600'
+        ],
+        [
+            'label' => 'Total Products',
+            'value' => $totalProducts,
+            'icon' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>',
+            'color' => 'bg-primary-50 text-primary-600'
+        ]
+    ];
+
+    return view('farmer/dashboard', [
+        'title' => 'Farmer Dashboard',
+        'farmerProducts' => $farmerProducts,
+        'totalProducts' => $totalProducts,
+        'stats' => $stats
+    ]);
+}
 
     public function products()
     {
