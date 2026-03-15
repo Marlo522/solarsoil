@@ -33,6 +33,8 @@ $routes->group('', ['filter' => 'auth:consumer'], static function ($routes) {
     $routes->get('confirmation', 'PageController::confirmation');
     $routes->post('order/place', 'PageController::placeOrder');
     $routes->get('profile', 'PageController::profile');
+    $routes->post('profile/update', 'PageController::updateProfile');
+    $routes->post('password/update', 'PageController::updatePassword');
 });
 
 // Farmer dashboard

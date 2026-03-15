@@ -251,7 +251,98 @@ class PageController extends BaseController
 
     public function profile(): string
     {
-        return view('pages/profile', ['pageTitle' => 'Profile']);
+        $userId = session()->get('user_id');
+        
+        $userModel = new \App\Models\UserModel();
+        $user = $userModel->find($userId);
+        
+        $orderModel = new \App\Models\OrderModel();
+        $cartItemModel = new \App\Models\CartItemModel();
+        
+        $orders = $orderModel->where('user_id', $userId)->orderBy('created_at', 'DESC')->findAll();
+        
+        foreach ($orders as &$order) {
+            $items = $cartItemModel->where('order_id', $order['order_id'])->findAll();
+            $itemCount = 0;
+            foreach ($items as $item) {
+                $itemCount += $item['quantity'];
+            }
+            $order['item_count'] = $itemCount;
+        }
+
+        return view('pages/profile', [
+            'pageTitle' => 'Profile',
+            'user' => $user,
+            'orders' => $orders
+        ]);
+    }
+
+    public function updateProfile()
+    {
+        $userId = session()->get('user_id');
+        $userModel = new \App\Models\UserModel();
+        
+        $rules = [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|valid_email',
+            'contact_number' => 'required',
+            'address' => 'required'
+        ];
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Please fill all required fields correctly.');
+        }
+
+        $data = [
+            'first_name' => $this->request->getPost('first_name'),
+            'middle_name' => $this->request->getPost('middle_name'),
+            'last_name' => $this->request->getPost('last_name'),
+            'suffix' => $this->request->getPost('suffix'),
+            'email' => $this->request->getPost('email'),
+            'contact_number' => $this->request->getPost('contact_number'),
+            'address' => $this->request->getPost('address'),
+        ];
+        
+        $userModel->update($userId, $data);
+        
+        // Update session data
+        $sessionData = [
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'email' => $data['email'],
+        ];
+        session()->set($sessionData);
+
+        return redirect()->back()->with('success', 'Profile updated successfully.');
+    }
+
+    public function updatePassword()
+    {
+        $userId = session()->get('user_id');
+        $userModel = new \App\Models\UserModel();
+        
+        $rules = [
+            'current_password' => 'required',
+            'new_password' => 'required|min_length[6]',
+            'confirm_new_password' => 'required|matches[new_password]'
+        ];
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()->with('error', 'Password validation failed. Make sure new password is at least 6 characters and matches confirmation.');
+        }
+
+        $user = $userModel->find($userId);
+        $currentPassword = (string) $this->request->getPost('current_password');
+        
+        if (!password_verify($currentPassword, $user['password'])) {
+            return redirect()->back()->with('error', 'Current password is incorrect.');
+        }
+
+        $newPassword = password_hash((string) $this->request->getPost('new_password'), PASSWORD_DEFAULT);
+        $userModel->update($userId, ['password' => $newPassword]);
+
+        return redirect()->back()->with('success', 'Password updated successfully.');
     }
 
     public function adminDashboard(): string
