@@ -44,17 +44,14 @@
             </a>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <?php
-            $featuredProducts = $products ?? [
-                ['product_id' => 1, 'image' => 'tomato.jpg', 'name' => 'Fresh Tomatoes', 'price' => 80.00, 'stock_quantity' => 100, 'description' => 'Organic red tomatoes, farm fresh', 'category' => 'Vegetables'],
-                ['product_id' => 2, 'image' => 'carrot.jpg', 'name' => 'Carrots', 'price' => 60.00, 'stock_quantity' => 150, 'description' => 'Sweet and crunchy carrots', 'category' => 'Vegetables'],
-                ['product_id' => 3, 'image' => 'banana.jpg', 'name' => 'Bananas', 'price' => 50.00, 'stock_quantity' => 200, 'description' => 'Ripe Cavendish bananas', 'category' => 'Fruits'],
-                ['product_id' => 5, 'image' => 'mango.jpg', 'name' => 'Mangoes', 'price' => 120.00, 'stock_quantity' => 60, 'description' => 'Sweet Philippine mangoes', 'category' => 'Fruits'],
-            ];
-            foreach ($featuredProducts as $product):
-            ?>
-                <?= view('components/product_card', ['product' => $product]) ?>
-            <?php endforeach; ?>
+            <?php $featuredProducts = $products ?? []; ?>
+            <?php if (empty($featuredProducts)): ?>
+                <p class="col-span-4 text-center text-sm text-gray-400 py-10">No featured products available at the moment.</p>
+            <?php else: ?>
+                <?php foreach ($featuredProducts as $product): ?>
+                    <?= view('components/product_card', ['product' => $product]) ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
         <div class="sm:hidden text-center mt-8">
             <a href="<?= base_url('products') ?>" class="inline-flex items-center gap-1 px-6 py-2.5 text-sm font-medium text-primary-700 border border-primary-200 hover:bg-primary-50 rounded-lg transition">

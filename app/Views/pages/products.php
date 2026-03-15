@@ -22,13 +22,19 @@
                 <h3 class="font-semibold text-gray-900 text-sm mb-4">Categories</h3>
                 <ul class="space-y-1">
                     <?php
-                    $selectedCategory = $selectedCategory ?? '';
+                    $selectedCategory = $selectedCategory ?? 'All';
                     $categoryList = $categoryList ?? ['All', 'Vegetables', 'Fruits', 'Grains', 'Herbs', 'Dairy', 'Organic'];
                     foreach ($categoryList as $cat):
-                        $isActive = ($cat === $selectedCategory) || ($cat === 'All' && $selectedCategory === '');
+                        $catUrl = base_url('products') . '?category=' . urlencode($cat === 'All' ? '' : $cat);
+                        // Preserve existing search/price/sort when switching category
+                        if (!empty($search)) $catUrl .= '&search=' . urlencode($search);
+                        if (!empty($minPrice)) $catUrl .= '&min_price=' . urlencode($minPrice);
+                        if (!empty($maxPrice)) $catUrl .= '&max_price=' . urlencode($maxPrice);
+                        if (($sort ?? 'latest') !== 'latest') $catUrl .= '&sort=' . urlencode($sort);
+                        $isActive = ($cat === $selectedCategory) || ($cat === 'All' && empty($selectedCategory));
                     ?>
                     <li>
-                        <a href="<?= base_url('products' . ($cat !== 'All' ? '?category=' . urlencode($cat) : '')) ?>"
+                        <a href="<?= $catUrl ?>"
                             class="block px-3 py-2 text-sm rounded-lg transition <?= $isActive ? 'bg-primary-50 text-primary-700 font-medium' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' ?>">
                             <?= esc($cat) ?>
                         </a>
@@ -37,15 +43,28 @@
                 </ul>
 
                 <!-- Price Range -->
-                <div class="mt-6 pt-6 border-t border-gray-100">
+                <form method="GET" action="<?= base_url('products') ?>" class="mt-6 pt-6 border-t border-gray-100">
+                    <!-- Preserve category and search when applying price filter -->
+                    <?php if (!empty($selectedCategory) && $selectedCategory !== 'All'): ?>
+                        <input type="hidden" name="category" value="<?= esc($selectedCategory) ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($search)): ?>
+                        <input type="hidden" name="search" value="<?= esc($search) ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($sort) && $sort !== 'latest'): ?>
+                        <input type="hidden" name="sort" value="<?= esc($sort) ?>">
+                    <?php endif; ?>
                     <h3 class="font-semibold text-gray-900 text-sm mb-4">Price Range</h3>
                     <div class="flex items-center gap-2">
-                        <input type="number" placeholder="Min" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <input type="number" name="min_price" value="<?= esc($minPrice ?? '') ?>" placeholder="Min" min="0" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                         <span class="text-gray-400 text-sm">-</span>
-                        <input type="number" placeholder="Max" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <input type="number" name="max_price" value="<?= esc($maxPrice ?? '') ?>" placeholder="Max" min="0" class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                     </div>
-                    <button class="w-full mt-3 px-3 py-2 bg-primary-600 text-white text-xs font-medium rounded-lg hover:bg-primary-700 transition">Apply Filter</button>
-                </div>
+                    <button type="submit" class="w-full mt-3 px-3 py-2 bg-primary-600 text-white text-xs font-medium rounded-lg hover:bg-primary-700 transition">Apply Filter</button>
+                    <?php if (!empty($minPrice) || !empty($maxPrice)): ?>
+                        <a href="<?= base_url('products') . (!empty($selectedCategory) && $selectedCategory !== 'All' ? '?category=' . urlencode($selectedCategory) : '') ?>" class="block text-center mt-2 text-xs text-gray-500 hover:text-primary-600">Clear price filter</a>
+                    <?php endif; ?>
+                </form>
             </div>
         </aside>
 
@@ -54,29 +73,40 @@
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900"><?= $selectedCategory ? esc($selectedCategory) : 'All Products' ?></h1>
-                    <p class="text-sm text-gray-500 mt-1">Showing <?= count($products ?? []) ?> products</p>
+                    <h1 class="text-2xl font-bold text-gray-900"><?= ($selectedCategory && $selectedCategory !== 'All') ? esc($selectedCategory) : 'All Products' ?></h1>
+                    <p class="text-sm text-gray-500 mt-1">
+                        <?php if (!empty($search)): ?>Results for "<?= esc($search) ?>" &mdash; <?php endif; ?>
+                        Showing <?= count($products ?? []) ?> products
+                    </p>
                 </div>
-                <div class="flex items-center gap-3">
+                <form method="GET" action="<?= base_url('products') ?>" class="flex items-center gap-3">
+                    <!-- Preserve category and price filters -->
+                    <?php if (!empty($selectedCategory) && $selectedCategory !== 'All'): ?>
+                        <input type="hidden" name="category" value="<?= esc($selectedCategory) ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($minPrice)): ?>
+                        <input type="hidden" name="min_price" value="<?= esc($minPrice) ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($maxPrice)): ?>
+                        <input type="hidden" name="max_price" value="<?= esc($maxPrice) ?>">
+                    <?php endif; ?>
                     <!-- Search Bar -->
                     <div class="relative">
                         <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                        <input type="text" placeholder="Search products..."
+                        <input type="text" name="search" value="<?= esc($search ?? '') ?>" placeholder="Search products..."
                                class="w-48 sm:w-64 pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 transition" />
                     </div>
-                    <select class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <option>Sort by: Latest</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Name: A-Z</option>
+                    <select name="sort" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="latest" <?= ($sort ?? 'latest') === 'latest' ? 'selected' : '' ?>>Sort by: Latest</option>
+                        <option value="price_asc" <?= ($sort ?? '') === 'price_asc' ? 'selected' : '' ?>>Price: Low to High</option>
+                        <option value="price_desc" <?= ($sort ?? '') === 'price_desc' ? 'selected' : '' ?>>Price: High to Low</option>
+                        <option value="name_asc" <?= ($sort ?? '') === 'name_asc' ? 'selected' : '' ?>>Name: A-Z</option>
                     </select>
-                </div>
+                </form>
             </div>
 
             <!-- Products Grid -->
-            <?php
-            $allProducts = $products ?? [];
-            ?>
+            <?php $allProducts = $products ?? []; ?>
 
             <?php if (empty($allProducts)): ?>
                 <div class="text-center py-20">

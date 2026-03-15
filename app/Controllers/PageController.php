@@ -6,7 +6,17 @@ class PageController extends BaseController
 {
     public function home(): string
     {
-        return view('pages/home', ['pageTitle' => 'Home']);
+        $productModel = new \App\Models\ProductModel();
+        $featuredProducts = $productModel
+            ->where('isDeleted', 0)
+            ->where('stock_quantity >', 0)
+            ->orderBy('product_id', 'DESC')
+            ->findAll(4);
+
+        return view('pages/home', [
+            'pageTitle' => 'Home',
+            'products'  => $featuredProducts,
+        ]);
     }
 
     public function products(): string
@@ -14,17 +24,55 @@ class PageController extends BaseController
         $productModel = new \App\Models\ProductModel();
 
         $category = $this->request->getGet('category');
+        $search   = trim($this->request->getGet('search') ?? '');
+        $minPrice = $this->request->getGet('min_price');
+        $maxPrice = $this->request->getGet('max_price');
+        $sort     = $this->request->getGet('sort') ?? 'latest';
 
+        $builder = $productModel->where('isDeleted', 0);
+
+        // Category filter
         if ($category && $category !== 'All') {
-            $productModel->where('category', $category);
+            $builder->where('category', $category);
         }
 
-        $products = $productModel->where('isDeleted', 0)->findAll();
+        // Search by name or description
+        if ($search !== '') {
+            $builder->groupStart()
+                ->like('name', $search)
+                ->orLike('description', $search)
+            ->groupEnd();
+        }
+
+        // Price range filter
+        if ($minPrice !== null && $minPrice !== '') {
+            $builder->where('price >=', (float) $minPrice);
+        }
+        if ($maxPrice !== null && $maxPrice !== '') {
+            $builder->where('price <=', (float) $maxPrice);
+        }
+
+        // Sorting
+        match ($sort) {
+            'price_asc'  => $builder->orderBy('price', 'ASC'),
+            'price_desc' => $builder->orderBy('price', 'DESC'),
+            'name_asc'   => $builder->orderBy('name', 'ASC'),
+            default      => $builder->orderBy('product_id', 'DESC'),
+        };
+
+        $products = $builder->findAll();
+
+        $categoryList = ['All', 'Vegetables', 'Fruits', 'Grains', 'Herbs', 'Dairy', 'Organic'];
 
         return view('pages/products', [
-            'pageTitle' => 'Products',
-            'products' => $products,
-            'selectedCategory' => $category ?? 'All'
+            'pageTitle'        => 'Products',
+            'products'         => $products,
+            'selectedCategory' => $category ?? 'All',
+            'categoryList'     => $categoryList,
+            'search'           => $search,
+            'minPrice'         => $minPrice ?? '',
+            'maxPrice'         => $maxPrice ?? '',
+            'sort'             => $sort,
         ]);
     }
 
