@@ -51,8 +51,23 @@
         <!-- Product Image -->
         <div class="lg:col-span-1">
             <div class="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
-                <?php if (!empty($product['image'])): ?>
-                    <img src="<?= base_url($product['image']) ?>" alt="<?= esc($product['name']) ?>" class="w-full h-full object-cover">
+                <?php
+                    $rawImage = str_replace('\\', '/', trim((string) ($product['image'] ?? '')));
+                    $imageUrl = '';
+                    $fallbackImageUrl = '';
+
+                    if ($rawImage !== '') {
+                        if (preg_match('#^https?://#i', $rawImage)) {
+                            $imageUrl = $rawImage;
+                        } else {
+                            $imageFile = basename($rawImage);
+                            $imageUrl = base_url('public/uploads/products/' . $imageFile);
+                            $fallbackImageUrl = base_url('uploads/products/' . $imageFile);
+                        }
+                    }
+                ?>
+                <?php if ($imageUrl !== ''): ?>
+                    <img src="<?= esc($imageUrl) ?>" data-fallback="<?= esc($fallbackImageUrl) ?>" onerror="if (this.dataset.fallback && this.src !== this.dataset.fallback) { this.src = this.dataset.fallback; } else { this.style.display = 'none'; }" alt="<?= esc($product['name']) ?>" class="w-full h-full object-cover">
                 <?php else: ?>
                     <div class="w-full h-full flex items-center justify-center">
                         <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">

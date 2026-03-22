@@ -108,11 +108,26 @@ $totalAmount  = $order['total_amount'] ?? ($subtotal + $shippingFee);
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <?php foreach ($orderItems as $item): ?>
+                        <?php
+                            $rawImage = str_replace('\\', '/', trim((string) ($item['image'] ?? '')));
+                            $imageUrl = '';
+                            $fallbackImageUrl = '';
+
+                            if ($rawImage !== '') {
+                                if (preg_match('#^https?://#i', $rawImage)) {
+                                    $imageUrl = $rawImage;
+                                } else {
+                                    $imageFile = basename($rawImage);
+                                    $imageUrl = base_url('public/uploads/products/' . $imageFile);
+                                    $fallbackImageUrl = base_url('uploads/products/' . $imageFile);
+                                }
+                            }
+                        ?>
                         <tr>
                             <td class="px-4 py-4">
                                 <div class="flex items-center gap-3">
-                                    <?php if (!empty($item['image'])): ?>
-                                        <img src="<?= base_url('public/uploads/products/' . esc($item['image'])) ?>" alt="<?= esc($item['name']) ?>" class="w-12 h-12 object-cover rounded-md shrink-0">
+                                    <?php if ($imageUrl !== ''): ?>
+                                        <img src="<?= esc($imageUrl) ?>" data-fallback="<?= esc($fallbackImageUrl) ?>" onerror="if (this.dataset.fallback && this.src !== this.dataset.fallback) { this.src = this.dataset.fallback; } else { this.style.display = 'none'; }" alt="<?= esc($item['name']) ?>" class="w-12 h-12 object-cover rounded-md shrink-0">
                                     <?php else: ?>
                                         <div class="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center shrink-0">
                                             <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909"/></svg>

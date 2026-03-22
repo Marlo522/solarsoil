@@ -108,10 +108,29 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <?php foreach ($orderItems as $item): ?>
+                            <?php
+                                $rawImage = str_replace('\\', '/', trim((string) ($item['image'] ?? '')));
+                                $imageUrl = '';
+                                $fallbackImageUrl = '';
+
+                                if ($rawImage !== '') {
+                                    if (preg_match('#^https?://#i', $rawImage)) {
+                                        $imageUrl = $rawImage;
+                                    } else {
+                                        $imageFile = basename($rawImage);
+                                        $imageUrl = base_url('public/uploads/products/' . $imageFile);
+                                        $fallbackImageUrl = base_url('uploads/products/' . $imageFile);
+                                    }
+                                }
+                            ?>
                             <tr>
                                 <td class="px-4 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <img src="<?= base_url('uploads/' . esc($item['image'])) ?>" alt="<?= esc($item['name']) ?>" class="w-12 h-12 object-cover rounded-md">
+                                        <?php if ($imageUrl !== ''): ?>
+                                            <img src="<?= esc($imageUrl) ?>" data-fallback="<?= esc($fallbackImageUrl) ?>" onerror="if (this.dataset.fallback && this.src !== this.dataset.fallback) { this.src = this.dataset.fallback; } else { this.style.display = 'none'; }" alt="<?= esc($item['name']) ?>" class="w-12 h-12 object-cover rounded-md">
+                                        <?php else: ?>
+                                            <div class="w-12 h-12 rounded-md bg-gray-100 flex items-center justify-center text-gray-400 text-xs">No image</div>
+                                        <?php endif; ?>
                                         <div class="ml-4">
                                             <p class="text-sm font-medium text-gray-900"><?= esc($item['name']) ?></p>
                                         </div>
